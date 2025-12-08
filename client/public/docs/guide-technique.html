@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Références techniques pour la maintenance des VR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #465c50;
+            border-bottom: 2px solid #f5901d;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #465c50;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #465c50;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 200px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5901d;
+            color: white;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #f5901d;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .steps {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .steps ol {
+            margin-left: 20px;
+        }
+        .image-placeholder {
+            background-color: #f0f0f0;
+            border: 1px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .schedule-table th {
+            background-color: #465c50;
+        }
+        .maintenance-item {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .difficulty-easy {
+            color: #28a745;
+        }
+        .difficulty-medium {
+            color: #fd7e14;
+        }
+        .difficulty-hard {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="../assets/escale-logo-dark.png" alt="Escale VR Beaumont">
+    </div>
+    
+    <div class="header">
+        <h1>Références techniques pour la maintenance des VR</h1>
+        <p>Guide complet pour l'entretien et la maintenance de votre véhicule récréatif</p>
+        <p><strong>Version 1.0 | Mai 2025</strong></p>
+    </div>
+    
+    <div class="section">
+        <h2>1. Introduction</h2>
+        <p>Ce guide technique vous fournit des informations détaillées sur l'entretien et la maintenance de votre véhicule récréatif. Il couvre les calendriers d'entretien recommandés, les procédures de maintenance saisonnière, et des conseils de dépannage de base.</p>
+        
+        <div class="note">
+            <strong>Note:</strong> Bien que ce guide contienne des informations techniques détaillées, il est toujours recommandé de consulter le manuel du propriétaire spécifique à votre véhicule et de faire appel à des professionnels pour les réparations complexes.
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Calendrier d'entretien recommandé</h2>
+        <p>Un entretien régulier est essentiel pour maintenir votre VR en bon état et prévenir des réparations coûteuses. Voici un calendrier d'entretien recommandé:</p>
+        
+        <h3>2.1. Entretien avant chaque voyage</h3>
+        <table>
+            <tr>
+                <th>Élément</th>
+                <th>Action requise</th>
+                <th>Outils nécessaires</th>
+            </tr>
+            <tr>
+                <td>Pneus</td>
+                <td>Vérifier la pression, l'usure et les dommages</td>
+                <td>Manomètre pour pneus</td>
+            </tr>
+            <tr>
+                <td>Systèmes d'éclairage</td>
+                <td>Vérifier tous les feux extérieurs et intérieurs</td>
+                <td>Aucun</td>
+            </tr>
+            <tr>
+                <td>Batteries</td>
+                <td>Vérifier le niveau de charge et les connexions</td>
+                <td>Voltmètre</td>
+            </tr>
+            <tr>
+                <td>Réservoirs d'eau</td>
+                <td>Vérifier les niveaux et s'assurer qu'ils sont propres</td>
+                <td>Aucun</td>
+            </tr>
+            <tr>
+                <td>Générateur</td>
+                <td>Tester le fonctionnement</td>
+                <td>Aucun</td>
+            </tr>
+            <tr>
+                <td>Fuites</td>
+                <td>Vérifier sous le VR les signes de fuite</td>
+                <td>Lampe de poche</td>
+            </tr>
+        </table>
+        
+        <h3>2.2. Entretien mensuel</h3>
+        <table>
+            <tr>
+                <th>Élément</th>
+                <th>Action requise</th>
+                <th>Outils nécessaires</th>
+            </tr>
+            <tr>
+                <td>Système d'eau potable</td>
+                <td>Nettoyer et sanitiser</td>
+                <td>Solution de nettoyage approuvée</td>
+            </tr>
+            <tr>
+                <td>Auvent</td>
+                <td>Nettoyer et lubrifier</td>
+                <td>Nettoyant doux, lubrifiant</td>
+            </tr>
+            <tr>
+                <td>Joints et scellants</td>
+                <td>Inspecter pour détecter l'usure ou les fissures</td>
+                <td>Lampe de poche</td>
+            </tr>
+            <tr>
+                <td>Système LP (propane)</td>
+                <td>Vérifier les fuites et le fonctionnement</td>
+                <td>Solution d'eau savonneuse</td>
+            </tr>
+            <tr>
+                <td>Climatisation</td>
+                <td>Nettoyer les filtres</td>
+                <td>Aspirateur, nettoyant doux</td>
+            </tr>
+        </table>
+        
+        <h3>2.3. Entretien saisonnier (printemps et automne)</h3>
+        <table>
+            <tr>
+                <th>Élément</th>
+                <th>Action requise</th>
+                <th>Fréquence</th>
+            </tr>
+            <tr>
+                <td>Toit et revêtement extérieur</td>
+                <td>Inspecter et reseller si nécessaire</td>
+                <td>Biannuel</td>
+            </tr>
+            <tr>
+                <td>Système de chauffage</td>
+                <td>Nettoyer et vérifier le fonctionnement</td>
+                <td>Automne</td>
+            </tr>
+            <tr>
+                <td>Climatisation</td>
+                <td>Entretien complet et nettoyage</td>
+                <td>Printemps</td>
+            </tr>
+            <tr>
+                <td>Système d'eau</td>
+                <td>Hiverniser/déhiverniser</td>
+                <td>Automne/Printemps</td>
+            </tr>
+            <tr>
+                <td>Châssis et suspension</td>
+                <td>Lubrifier et vérifier</td>
+                <td>Biannuel</td>
+            </tr>
+            <tr>
+                <td>Appareils électroménagers</td>
+                <td>Inspection et nettoyage en profondeur</td>
+                <td>Biannuel</td>
+            </tr>
+        </table>
+        
+        <h3>2.4. Entretien annuel</h3>
+        <table>
+            <tr>
+                <th>Élément</th>
+                <th>Action requise</th>
+                <th>Qui devrait le faire</th>
+            </tr>
+            <tr>
+                <td>Système électrique complet</td>
+                <td>Inspection professionnelle</td>
+                <td>Technicien certifié</td>
+            </tr>
+            <tr>
+                <td>Système de propane</td>
+                <td>Test de pression et inspection</td>
+                <td>Technicien certifié</td>
+            </tr>
+            <tr>
+                <td>Chauffe-eau</td>
+                <td>Nettoyage et entretien</td>
+                <td>Technicien certifié</td>
+            </tr>
+            <tr>
+                <td>Système de refroidissement du moteur</td>
+                <td>Vidange et remplissage</td>
+                <td>Technicien certifié</td>
+            </tr>
+            <tr>
+                <td>Essieux et freins</td>
+                <td>Inspection et ajustement</td>
+                <td>Technicien certifié</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>3. Hivernisation du VR</h2>
+        <p>L'hivernisation est une étape cruciale pour protéger votre VR pendant les mois d'hiver. Voici un guide étape par étape:</p>
+        
+        <div class="warning">
+            <strong>Attention:</strong> Une hivernisation incorrecte peut entraîner des dommages coûteux dus au gel, particulièrement aux systèmes d'eau. Suivez ces instructions avec soin ou faites appel à un professionnel.
+        </div>
+        
+        <h3>3.1. Système d'eau</h3>
+        <div class="steps">
+            <ol>
+                <li>Videz le réservoir d'eau douce</li>
+                <li>Videz et rincez les réservoirs d'eaux grises et noires</li>
+                <li>Ouvrez tous les robinets et la douche</li>
+                <li>Purgez le chauffe-eau (avec la valve de surpression)</li>
+                <li>Ajoutez de l'antigel pour VR:
+                    <ul>
+                        <li>Versez l'antigel dans les drains d'évier et de douche</li>
+                        <li>Versez l'antigel dans la cuvette des toilettes</li>
+                        <li>Dérivez le système d'eau pour contourner le chauffe-eau</li>
+                        <li>Utilisez la pompe à eau pour faire circuler l'antigel dans les conduites</li>
+                        <li>Fermez les robinets quand l'antigel rose apparaît</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="image-placeholder">
+            [Diagramme: Système de plomberie d'un VR avec points de purge indiqués]
+        </div>
+        
+        <h3>3.2. Batterie et systèmes électriques</h3>
+        <div class="steps">
+            <ol>
+                <li>Déconnectez toutes les batteries</li>
+                <li>Nettoyez les bornes avec une solution de bicarbonate de soude</li>
+                <li>Stockez les batteries dans un endroit frais mais non exposé au gel</li>
+                <li>Chargez complètement les batteries avant le stockage</li>
+                <li>Vérifiez périodiquement la charge pendant l'hiver</li>
+                <li>Débranchez tous les appareils électroniques</li>
+            </ol>
+        </div>
+        
+        <h3>3.3. Intérieur du VR</h3>
+        <div class="steps">
+            <ol>
+                <li>Nettoyez l'intérieur en profondeur</li>
+                <li>Videz le réfrigérateur et laissez les portes entrouvertes</li>
+                <li>Retirez tous les aliments périssables</li>
+                <li>Placez des absorbeurs d'humidité pour prévenir la moisissure</li>
+                <li>Fermez les stores pour protéger les tissus et meubles</li>
+                <li>Laissez les portes des armoires ouvertes pour la circulation d'air</li>
+                <li>Inspectez pour des signes d'intrusion de rongeurs et scellez les points d'entrée</li>
+            </ol>
+        </div>
+        
+        <h3>3.4. Extérieur du VR</h3>
+        <div class="steps">
+            <ol>
+                <li>Lavez et cirez l'extérieur</li>
+                <li>Vérifiez et rescellez les joints si nécessaire</li>
+                <li>Lubrifiez les serrures et les charnières</li>
+                <li>Couvrez les pneus pour les protéger des UV</li>
+                <li>Fermez toutes les ouvertures (cheminées, évents)</li>
+                <li>Considérez l'utilisation d'une housse de protection conçue pour votre modèle</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>4. Remise en service au printemps</h2>
+        <p>La remise en service de votre VR au printemps est aussi importante que l'hivernisation. Voici les étapes à suivre:</p>
+        
+        <h3>4.1. Inspection extérieure</h3>
+        <div class="steps">
+            <ol>
+                <li>Inspectez le toit pour les dommages ou fuites potentielles</li>
+                <li>Vérifiez les joints et les scellants</li>
+                <li>Inspectez les pneus (fissures, usure, pression)</li>
+                <li>Vérifiez sous le VR pour des signes de nids d'animaux ou de dommages</li>
+                <li>Nettoyez l'extérieur</li>
+            </ol>
+        </div>
+        
+        <h3>4.2. Système d'eau</h3>
+        <div class="steps">
+            <ol>
+                <li>Reconnectez tous les éléments déconnectés lors de l'hivernisation</li>
+                <li>Rincez le système avec de l'eau propre (plusieurs fois)</li>
+                <li>Désinfectez le système d'eau potable:
+                    <ul>
+                        <li>Mélangez 1/4 tasse d'eau de Javel par 15 gallons d'eau</li>
+                        <li>Remplissez le réservoir d'eau potable avec cette solution</li>
+                        <li>Faites circuler la solution dans toutes les conduites</li>
+                        <li>Laissez reposer pendant 4 heures</li>
+                        <li>Vidangez et rincez à fond plusieurs fois</li>
+                    </ul>
+                </li>
+                <li>Inspectez pour les fuites</li>
+                <li>Installez un nouveau filtre à eau</li>
+            </ol>
+        </div>
+        
+        <h3>4.3. Systèmes électriques et batteries</h3>
+        <div class="steps">
+            <ol>
+                <li>Réinstallez les batteries</li>
+                <li>Vérifiez les niveaux d'électrolyte si applicable</li>
+                <li>Vérifiez toutes les connexions</li>
+                <li>Testez tous les appareils électriques</li>
+                <li>Vérifiez les fusibles et disjoncteurs</li>
+            </ol>
+        </div>
+        
+        <h3>4.4. Système de propane</h3>
+        <div class="steps">
+            <ol>
+                <li>Vérifiez les dates d'expiration des réservoirs</li>
+                <li>Faites un test de fuite (eau savonneuse)</li>
+                <li>Ouvrez lentement la vanne principale</li>
+                <li>Testez tous les appareils à propane</li>
+            </ol>
+        </div>
+        
+        <div class="warning">
+            <strong>Attention:</strong> Toujours ouvrir les fenêtres lors du premier test des appareils à propane après l'hiver. Soyez attentif aux odeurs inhabituelles qui pourraient indiquer une fuite.
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>5. Dépannage de base</h2>
+        <p>Voici des solutions aux problèmes courants que vous pourriez rencontrer avec votre VR:</p>
+        
+        <h3>5.1. Problèmes électriques</h3>
+        <table>
+            <tr>
+                <th>Problème</th>
+                <th>Causes possibles</th>
+                <th>Solutions</th>
+                <th>Difficulté</th>
+            </tr>
+            <tr>
+                <td>Pas d'alimentation électrique</td>
+                <td>Disjoncteur déclenché, connexion défectueuse</td>
+                <td>Vérifier les disjoncteurs, inspecter le cordon d'alimentation</td>
+                <td class="difficulty-easy">Facile</td>
+            </tr>
+            <tr>
+                <td>Certains appareils ne fonctionnent pas</td>
+                <td>Fusible grillé, appareil défectueux</td>
+                <td>Vérifier et remplacer les fusibles, tester avec un autre appareil</td>
+                <td class="difficulty-easy">Facile</td>
+            </tr>
+            <tr>
+                <td>Batteries se déchargent rapidement</td>
+                <td>Batteries âgées, parasitage électrique</td>
+                <td>Tester les batteries, vérifier les appareils qui consomment en veille</td>
+                <td class="difficulty-medium">Moyenne</td>
+            </tr>
+            <tr>
+                <td>Convertisseur ne charge pas les batteries</td>
+                <td>Fusible du convertisseur, convertisseur défectueux</td>
+                <td>Remplacer le fusible, faire tester le convertisseur</td>
+                <td class="difficulty-medium">Moyenne</td>
+            </tr>
+            <tr>
+                <td>Éclairage LED scintillant</td>
+                <td>Tension fluctuante, mauvaise connexion</td>
+                <td>Vérifier les connexions, utiliser un stabilisateur de tension</td>
+                <td class="difficulty-medium">Moyenne</td>
+            </tr>
+        </table>
+        
+        <h3>5.2. Problèmes de plomberie</h3>
+        <table>
+            <tr>
+                <th>Problème</th>
+                <th>Causes possibles</th>
+                <th>Solutions</th>
+                <th>Difficulté</th>
+            </tr>
+            <tr>
+                <td>Pompe à eau fonctionne mais pas d'eau</td>
+                <td>Réservoir vide, air dans le système</td>
+                <td>Remplir le réservoir, purger l'air en ouvrant les robinets</td>
+                <td class="difficulty-easy">Facile</td>
+            </tr>
+            <tr>
+                <td>Eau qui s'écoule lentement</td>
+                <td>Filtre bouché, basse pression</td>
+                <td>Remplacer le filtre, vérifier la pompe</td>
+                <td class="difficulty-easy">Facile</td>
+            </tr>
+            <tr>
+                <td>Toilette qui fuit</td>
+                <td>Joint défectueux, valve de drainage</td>
+                <td>Remplacer le joint, nettoyer ou remplacer la valve</td>
+                <td class="difficulty-medium">Moyenne</td>
+            </tr>
+            <tr>
+                <td>Odeurs provenant des réservoirs</td>
+                <td>Accumulation de déchets, produits chimiques épuisés</td>
+                <td>Nettoyer les réservoirs, utiliser des produits de traitement</td>
+                <td class="difficulty-medium">Moyenne</td>
+            </tr>
+            <tr>
+                <td>Chauffe-eau ne fonctionne pas</td>
+                <td>Thermostat, élément chauffant</td>
+                <td>Réinitialiser le thermostat, faire remplacer l'élément</td>
+                <td class="difficulty-hard">Difficile</td>
+            </tr>
+        </table>
+        
+        <h3>5.3. Problèmes de propane</h3>
+        <table>
+            <tr>
+                <th>Problème</th>
+                <th>Causes possibles</th>
+                <th>Solutions</th>
+                <th>Difficulté</th>
+            </tr>
+            <tr>
+                <td>Odeur de propane</td>
+                <td>Fuite dans le système</td>
+                <td>Fermer immédiatement la vanne principale, aérer, faire vérifier par un professionnel</td>
+                <td class="difficulty-hard">Difficile</td>
+            </tr>
+            <tr>
+                <td>Réfrigérateur ne refroidit pas en mode propane</td>
+                <td>Brûleur sale, thermocouple défectueux</td>
+                <td>Nettoyer le brûleur, remplacer le thermocouple</td>
+                <td class="difficulty-medium">Moyenne</td>
+            </tr>
+            <tr>
+                <td>Cuisinière à propane avec flamme jaune</td>
+                <td>Brûleurs sales, mauvais mélange air-gaz</td>
+                <td>Nettoyer les brûleurs, ajuster l'entrée d'air</td>
+                <td class="difficulty-medium">Moyenne</td>
+            </tr>
+        </table>
+        
+        <div class="warning">
+            <strong>Attention:</strong> N'essayez jamais de réparer vous-même des fuites de propane ou des problèmes complexes de propane. Faites toujours appel à un technicien certifié.
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>6. Glossaire des termes techniques</h2>
+        <p>Familiarisez-vous avec ces termes techniques couramment utilisés dans le domaine des VR:</p>
+        
+        <table>
+            <tr>
+                <th>Terme</th>
+                <th>Définition</th>
+            </tr>
+            <tr>
+                <td>PNBV (GVWR)</td>
+                <td>Poids Nominal Brut du Véhicule - Le poids maximum que le VR peut supporter en toute sécurité, incluant le poids à vide, l'eau, le propane, la cargaison et les passagers.</td>
+            </tr>
+            <tr>
+                <td>PNBE (GAWR)</td>
+                <td>Poids Nominal Brut sur l'Essieu - Le poids maximum que chaque essieu peut supporter.</td>
+            </tr>
+            <tr>
+                <td>PTU (UVW)</td>
+                <td>Poids à Vide du Véhicule - Le poids du VR tel qu'il sort de l'usine, sans eau, propane, cargaison ou passagers.</td>
+            </tr>
+            <tr>
+                <td>CCC</td>
+                <td>Capacité de Chargement de Cargaison - La quantité de poids que vous pouvez ajouter au VR (PNBV moins PTU).</td>
+            </tr>
+            <tr>
+                <td>Boondocking</td>
+                <td>Camping sans raccordements aux services (eau, électricité, égouts).</td>
+            </tr>
+            <tr>
+                <td>Convertisseur</td>
+                <td>Dispositif qui convertit le courant alternatif (AC) en courant continu (DC) pour charger les batteries et alimenter les appareils DC.</td>
+            </tr>
+            <tr>
+                <td>Onduleur</td>
+                <td>Dispositif qui convertit le courant continu (DC) des batteries en courant alternatif (AC) pour faire fonctionner les appareils électroménagers.</td>
+            </tr>
+            <tr>
+                <td>Réservoir d'eau grise</td>
+                <td>Réservoir qui collecte les eaux usées des éviers et de la douche.</td>
+            </tr>
+            <tr>
+                <td>Réservoir d'eau noire</td>
+                <td>Réservoir qui collecte les eaux usées des toilettes.</td>
+            </tr>
+            <tr>
+                <td>BTU</td>
+                <td>British Thermal Unit - Unité de mesure pour la capacité de chauffage ou de refroidissement.</td>
+            </tr>
+            <tr>
+                <td>Stabilisateurs</td>
+                <td>Dispositifs utilisés pour réduire le mouvement du VR lorsqu'il est stationné.</td>
+            </tr>
+            <tr>
+                <td>Mover / Aide à la manœuvre</td>
+                <td>Système électrique qui aide à déplacer et à positionner une caravane manuellement.</td>
+            </tr>
+            <tr>
+                <td>Hivernisation</td>
+                <td>Processus de préparation d'un VR pour le stockage hivernal, particulièrement la protection du système de plomberie contre le gel.</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 Escale VR Beaumont. Tous droits réservés.</p>
+        <p>Pour la dernière version de ce guide, visitez notre site web: www.escale-vr.com/guides</p>
+    </div>
+</body>
+</html>

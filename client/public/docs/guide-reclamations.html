@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide des réclamations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #465c50;
+            border-bottom: 2px solid #f5901d;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #465c50;
+            margin-top: 30px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            max-width: 200px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5901d;
+            color: white;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #f5901d;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .steps {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .steps ol {
+            margin-left: 20px;
+        }
+        .checklist {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .checklist ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .checklist ul li {
+            padding: 8px 0 8px 30px;
+            position: relative;
+        }
+        .checklist ul li:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23f5901d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        .image-placeholder {
+            background-color: #f0f0f0;
+            border: 1px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="../assets/escale-logo-dark.png" alt="Escale VR Beaumont">
+    </div>
+    
+    <div class="header">
+        <h1>Guide des réclamations</h1>
+        <p>Procédures pour les réclamations de garantie et d'assurance</p>
+        <p><strong>Version 1.0 | Mai 2025</strong></p>
+    </div>
+    
+    <div class="section">
+        <h2>1. Introduction aux réclamations</h2>
+        <p>Ce guide explique en détail comment soumettre et suivre les réclamations de garantie et d'assurance pour votre véhicule récréatif. Il couvre les différents types de réclamations, les documents nécessaires et le processus complet de traitement.</p>
+        
+        <div class="note">
+            <strong>Important:</strong> Pour maximiser vos chances d'approbation, il est essentiel de soumettre toutes les informations requises et de respecter les délais. Les réclamations incomplètes ou tardives risquent d'être refusées.
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Types de réclamations disponibles</h2>
+        <p>Il existe plusieurs types de réclamations que vous pouvez soumettre, selon la nature de votre problème:</p>
+        
+        <table>
+            <tr>
+                <th>Type de réclamation</th>
+                <th>Description</th>
+                <th>Période de couverture</th>
+            </tr>
+            <tr>
+                <td>Garantie du fabricant</td>
+                <td>Couvre les défauts de fabrication et les problèmes mécaniques</td>
+                <td>Généralement 1-2 ans à partir de la date d'achat</td>
+            </tr>
+            <tr>
+                <td>Extension de garantie</td>
+                <td>Protection supplémentaire après expiration de la garantie du fabricant</td>
+                <td>Selon le contrat d'extension</td>
+            </tr>
+            <tr>
+                <td>Réclamation d'assurance</td>
+                <td>Couvre les dommages accidentels, le vol, les catastrophes naturelles</td>
+                <td>Selon votre police d'assurance</td>
+            </tr>
+            <tr>
+                <td>Garantie des pièces</td>
+                <td>Couvre les pièces remplacées lors d'une réparation</td>
+                <td>Généralement 90 jours à 1 an</td>
+            </tr>
+            <tr>
+                <td>Garantie de service</td>
+                <td>Couvre les défauts de main-d'œuvre dans les réparations effectuées</td>
+                <td>Généralement 6 mois</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>3. Documents requis pour chaque type de réclamation</h2>
+        
+        <h3>3.1. Réclamations sous garantie du fabricant</h3>
+        <div class="checklist">
+            <ul>
+                <li>Preuve d'achat (facture originale)</li>
+                <li>Livret de garantie ou numéro de garantie</li>
+                <li>Numéro VIN (numéro d'identification du véhicule)</li>
+                <li>Photos détaillées du problème</li>
+                <li>Description détaillée du problème</li>
+                <li>Historique d'entretien du véhicule</li>
+            </ul>
+        </div>
+        
+        <h3>3.2. Réclamations d'assurance</h3>
+        <div class="checklist">
+            <ul>
+                <li>Police d'assurance active</li>
+                <li>Rapport d'incident (accident, vol, etc.)</li>
+                <li>Photos des dommages sous plusieurs angles</li>
+                <li>Estimation des coûts de réparation</li>
+                <li>Rapport de police (si applicable)</li>
+                <li>Témoignages (si disponibles)</li>
+            </ul>
+        </div>
+        
+        <h3>3.3. Extensions de garantie</h3>
+        <div class="checklist">
+            <ul>
+                <li>Contrat d'extension de garantie</li>
+                <li>Preuve de paiement de la garantie étendue</li>
+                <li>Historique complet d'entretien</li>
+                <li>Documentation du problème (photos, vidéos)</li>
+                <li>Diagnostic d'un technicien certifié</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>4. Processus de soumission d'une réclamation</h2>
+        
+        <h3>4.1. Étapes pour soumettre une réclamation de garantie</h3>
+        <div class="steps">
+            <ol>
+                <li>Connectez-vous à votre compte sur la plateforme GestionVR</li>
+                <li>Accédez à la section "Services"</li>
+                <li>Sélectionnez le service pour lequel vous souhaitez soumettre une réclamation</li>
+                <li>Cliquez sur le bouton "Créer une réclamation"</li>
+                <li>Sélectionnez le type de réclamation (garantie du fabricant, extension, etc.)</li>
+                <li>Remplissez le formulaire avec tous les détails nécessaires:
+                    <ul>
+                        <li>Description du problème</li>
+                        <li>Date à laquelle vous avez remarqué le problème</li>
+                        <li>Kilométrage actuel du véhicule</li>
+                    </ul>
+                </li>
+                <li>Téléchargez les documents et photos requis</li>
+                <li>Vérifiez attentivement toutes les informations</li>
+                <li>Soumettez la réclamation</li>
+            </ol>
+        </div>
+        
+        <div class="image-placeholder">
+            [Capture d'écran: Formulaire de soumission de réclamation rempli]
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>5. Suivi de l'état des réclamations</h2>
+        
+        <h3>5.1. Comprendre les différents états</h3>
+        <p>Une fois soumise, votre réclamation passera par différents états:</p>
+        
+        <table>
+            <tr>
+                <th>État</th>
+                <th>Description</th>
+                <th>Action requise</th>
+            </tr>
+            <tr>
+                <td>Soumise</td>
+                <td>La réclamation a été reçue mais pas encore examinée</td>
+                <td>Aucune action requise</td>
+            </tr>
+            <tr>
+                <td>En révision</td>
+                <td>L'agent examine actuellement votre réclamation</td>
+                <td>Aucune action requise</td>
+            </tr>
+            <tr>
+                <td>Informations supplémentaires requises</td>
+                <td>Des documents ou détails supplémentaires sont nécessaires</td>
+                <td>Fournir les informations demandées dès que possible</td>
+            </tr>
+            <tr>
+                <td>Approuvée</td>
+                <td>La réclamation a été acceptée</td>
+                <td>Suivre les instructions pour les prochaines étapes</td>
+            </tr>
+            <tr>
+                <td>Refusée</td>
+                <td>La réclamation a été rejetée</td>
+                <td>Vérifier les raisons du refus et les options d'appel</td>
+            </tr>
+            <tr>
+                <td>En appel</td>
+                <td>Vous avez contesté une décision de refus</td>
+                <td>Attendre la révision de l'appel</td>
+            </tr>
+        </table>
+        
+        <h3>5.2. Comment vérifier l'état d'une réclamation</h3>
+        <div class="steps">
+            <ol>
+                <li>Connectez-vous à votre compte</li>
+                <li>Accédez à la section "Services"</li>
+                <li>Sélectionnez le service concerné</li>
+                <li>Cliquez sur l'onglet "Réclamations"</li>
+                <li>Vous verrez la liste de toutes vos réclamations avec leur état actuel</li>
+                <li>Cliquez sur une réclamation spécifique pour voir les détails complets</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>6. Résolution des problèmes courants</h2>
+        
+        <h3>6.1. Réclamation refusée</h3>
+        <p>Si votre réclamation est refusée, vous pouvez:</p>
+        <div class="steps">
+            <ol>
+                <li>Examiner attentivement la raison du refus</li>
+                <li>Vérifier si vous avez fourni toutes les informations nécessaires</li>
+                <li>Cliquer sur le bouton "Contester la décision" si vous pensez que le refus est injustifié</li>
+                <li>Fournir des informations ou documents supplémentaires pour appuyer votre demande</li>
+                <li>Soumettre votre contestation</li>
+            </ol>
+        </div>
+        
+        <h3>6.2. Réclamation bloquée ou retardée</h3>
+        <p>Si votre réclamation semble bloquée dans un état pendant une période prolongée:</p>
+        <div class="steps">
+            <ol>
+                <li>Vérifiez s'il y a des demandes d'informations supplémentaires en attente</li>
+                <li>Contactez l'agent de réclamation assigné via la fonction de messagerie de la plateforme</li>
+                <li>Si vous ne recevez pas de réponse dans les 48 heures, appelez notre service client au 418-555-1234</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>7. Conseils pour maximiser vos chances d'approbation</h2>
+        
+        <h3>7.1. Documentation complète</h3>
+        <div class="checklist">
+            <ul>
+                <li>Prenez des photos claires et détaillées du problème sous plusieurs angles</li>
+                <li>Fournissez une description précise et détaillée du problème</li>
+                <li>Joignez tous les documents d'entretien pertinents</li>
+                <li>Incluez des vidéos si cela peut aider à démontrer le problème</li>
+                <li>Conservez tous les reçus et preuves d'achat</li>
+            </ul>
+        </div>
+        
+        <h3>7.2. Délais à respecter</h3>
+        <div class="note">
+            <strong>Important:</strong> Les réclamations doivent généralement être soumises dans les délais suivants:
+            <ul>
+                <li>Garantie du fabricant: dès que le problème est découvert</li>
+                <li>Réclamations d'assurance: dans les 24-48 heures suivant l'incident</li>
+                <li>Garantie de service: dans les 30 jours suivant la réparation</li>
+            </ul>
+            Tout retard peut compromettre vos chances d'approbation.
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>8. Assistance supplémentaire</h2>
+        
+        <p>Si vous avez besoin d'aide avec votre réclamation, plusieurs options s'offrent à vous:</p>
+        
+        <h3>8.1. Assistance en ligne</h3>
+        <div class="steps">
+            <ol>
+                <li>Consultez la section FAQ de la page "Aide & Support"</li>
+                <li>Utilisez le chat en direct disponible sur notre site web (lun-ven, 9h-16h)</li>
+                <li>Envoyez un message via le formulaire de contact sur la page "Aide & Support"</li>
+            </ol>
+        </div>
+        
+        <h3>8.2. Assistance téléphonique</h3>
+        <p>Notre équipe spécialisée en réclamations est disponible pour vous aider:</p>
+        <ul>
+            <li><strong>Téléphone:</strong> 418-555-1234, option 2</li>
+            <li><strong>Heures d'ouverture:</strong> Lundi au vendredi, 8h à 17h</li>
+        </ul>
+        
+        <h3>8.3. Assistance en personne</h3>
+        <p>Vous pouvez également vous rendre à notre centre de service pour obtenir de l'aide:</p>
+        <ul>
+            <li><strong>Adresse:</strong> 123 Boulevard des Campeurs, Beaumont, QC G0R 1C0</li>
+            <li><strong>Heures d'ouverture:</strong> Lundi au vendredi, 8h à 17h; Samedi, 9h à 14h</li>
+        </ul>
+    </div>
+    
+    <div class="footer">
+        <p>© 2025 Escale VR Beaumont. Tous droits réservés.</p>
+        <p>Pour la dernière version de ce guide, visitez notre site web: www.escale-vr.com/guides</p>
+    </div>
+</body>
+</html>
