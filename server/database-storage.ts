@@ -5,7 +5,10 @@ import {
   jobs, type Job, type InsertJob,
   claims, type Claim, type InsertClaim,
   notifications, type Notification, type InsertNotification,
-  photos, type Photo, type InsertPhoto
+  photos, type Photo, type InsertPhoto,
+  chatRooms, type ChatRoom, type InsertChatRoom,
+  chatMessages, type ChatMessage, type InsertChatMessage,
+  chatParticipants, type ChatParticipant, type InsertChatParticipant
 } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
@@ -13,15 +16,14 @@ import { pool } from "./db";
 import { IStorage } from "./storage";
 import { eq, and, desc } from "drizzle-orm";
 
-// Create a PostgreSQL session store
 const PostgresSessionStore = connectPg(session);
 
 export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
 
   constructor() {
-    this.sessionStore = new PostgresSessionStore({ 
-      pool, 
+    this.sessionStore = new PostgresSessionStore({
+      pool,
       createTableIfMissing: true,
     });
   }
@@ -40,6 +42,20 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const result = await db.insert(users).values(insertUser).returning();
     return result[0];
+  }
+
+  async updateUser(id: number, userUpdate: Partial<User>): Promise<User> {
+    const result = await db.update(users)
+      .set(userUpdate)
+      .where(eq(users.id, id))
+      .returning();
+    if (!result[0]) throw new Error(`User with ID ${id} not found`);
+    return result[0];
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id)).returning();
+    return result.length > 0;
   }
 
   async getUsers(): Promise<User[]> {
@@ -76,11 +92,11 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return result[0];
   }
-  
+
   async deleteUnit(id: number): Promise<void> {
     await db.delete(units).where(eq(units.id, id));
   }
-  
+
   async getJobsByUnit(unitId: number): Promise<Job[]> {
     return await db.select().from(jobs).where(eq(jobs.unitId, unitId));
   }
@@ -219,5 +235,125 @@ export class DatabaseStorage implements IStorage {
       .where(eq(photos.id, id))
       .returning();
     return result[0];
+  }
+
+  // Chat Room methods
+  async getChatRoom(id: number): Promise<ChatRoom | undefined> {
+    const result = await db.select().from(chatRooms).where(eq(chatRooms.id, id));
+    return result[0];
+  }
+
+  async getChatRooms(): Promise<ChatRoom[]> {
+    return await db.select().from(chatRooms);
+  }
+
+  async getChatRoomsByType(type: string): Promise<ChatRoom[]> {
+    return await db.select().from(chatRooms).where(eq(chatRooms.type, type as any));
+  }
+
+  async getChatRoomsByUser(userId: number): Promise<ChatRoom[]> {
+    const participations = await db.select()
+      .from(chatParticipants)
+      .where(and(eq(chatParticipants.userId, userId), eq(chatParticipants.isActive, true)));
+
+    const roomIds = participations.map(p => p.roomId);
+    if (roomIds.length === 0) return [];
+
+    const rooms: ChatRoom[] = [];
+    for (const roomId of roomIds) {
+      const room = await this.getChatRoom(roomId);
+      if (room) rooms.push(room);
+    }
+    return rooms;
+  }
+
+  async getChatRoomsByCreator(creatorId: number): Promise<ChatRoom[]> {
+    return await db.select().from(chatRooms).where(eq(chatRooms.createdBy, creatorId));
+  }
+
+  async getChatRoomsByClient(clientId: number): Promise<ChatRoom[]> {
+    return await db.select()
+      .from(chatRooms)
+      .where(and(eq(chatRooms.clientId, clientId), eq(chatRooms.type, "client")));
+  }
+
+  async createChatRoom(insertRoom: InsertChatRoom): Promise<ChatRoom> {
+    const result = await db.insert(chatRooms).values(insertRoom).returning();
+    return result[0];
+  }
+
+  async updateChatRoom(id: number, chatRoomUpdate: Partial<ChatRoom>): Promise<ChatRoom | undefined> {
+    const result = await db.update(chatRooms)
+      .set(chatRoomUpdate)
+      .where(eq(chatRooms.id, id))
+      .returning();
+    return result[0];
+  }
+
+  // Chat Message methods
+  async getChatMessage(id: number): Promise<ChatMessage | undefined> {
+    const result = await db.select().from(chatMessages).where(eq(chatMessages.id, id));
+    return result[0];
+  }
+
+  async getChatMessagesByRoom(roomId: number): Promise<ChatMessage[]> {
+    return await db.select()
+      .from(chatMessages)
+      .where(eq(chatMessages.roomId, roomId))
+      .orderBy(chatMessages.sentAt);
+  }
+
+  async getChatMessagesBySender(senderId: number): Promise<ChatMessage[]> {
+    return await db.select().from(chatMessages).where(eq(chatMessages.senderId, senderId));
+  }
+
+  async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
+    const result = await db.insert(chatMessages).values(message).returning();
+    return result[0];
+  }
+
+  async markChatMessagesAsRead(roomId: number, userId: number): Promise<void> {
+    await db.update(chatMessages)
+      .set({ isRead: true })
+      .where(
+        and(
+          eq(chatMessages.roomId, roomId),
+          eq(chatMessages.isRead, false)
+        )
+      );
+  }
+
+  // Chat Participant methods
+  async getChatParticipant(id: number): Promise<ChatParticipant | undefined> {
+    const result = await db.select().from(chatParticipants).where(eq(chatParticipants.id, id));
+    return result[0];
+  }
+
+  async getChatParticipantsByRoom(roomId: number): Promise<ChatParticipant[]> {
+    return await db.select()
+      .from(chatParticipants)
+      .where(and(eq(chatParticipants.roomId, roomId), eq(chatParticipants.isActive, true)));
+  }
+
+  async getChatParticipantsByUser(userId: number): Promise<ChatParticipant[]> {
+    return await db.select()
+      .from(chatParticipants)
+      .where(and(eq(chatParticipants.userId, userId), eq(chatParticipants.isActive, true)));
+  }
+
+  async addChatParticipant(participant: InsertChatParticipant): Promise<ChatParticipant> {
+    const result = await db.insert(chatParticipants).values(participant).returning();
+    return result[0];
+  }
+
+  async removeChatParticipant(roomId: number, userId: number): Promise<void> {
+    await db.update(chatParticipants)
+      .set({ isActive: false })
+      .where(
+        and(
+          eq(chatParticipants.roomId, roomId),
+          eq(chatParticipants.userId, userId)
+        )
+      );
   }
 }

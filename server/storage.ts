@@ -599,5 +599,6 @@ export class MemStorage implements IStorage {
 // Import the DatabaseStorage class
 import { DatabaseStorage } from "./database-storage";
 
-// Temporarily use memory storage to fix the login issue
-export const storage = new MemStorage();
+export const storage = process.env.DATABASE_URL
+  ? new DatabaseStorage()
+  : new MemStorage();
