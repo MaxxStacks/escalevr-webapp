@@ -39,11 +39,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return await res.json();
     },
     onSuccess: (user: SelectUser) => {
-      queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Connexion réussie",
         description: `Bienvenue, ${user.fullName}!`,
       });
+      // Full page reload so the browser sends the new session cookie
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 600);
     },
     onError: (error: Error) => {
       toast({
@@ -60,11 +63,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return await res.json();
     },
     onSuccess: (user: SelectUser) => {
-      queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Inscription réussie",
         description: `Bienvenue, ${user.fullName}!`,
       });
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 600);
     },
     onError: (error: Error) => {
       toast({
