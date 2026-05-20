@@ -29,15 +29,17 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  const isProduction = process.env.NODE_ENV === "production";
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "rv-track-session-secret",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     store: storage.sessionStore,
     cookie: { 
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      secure: false, // Set to false for development
-      sameSite: "lax"
+      secure: true,
+      sameSite: "none",
+      httpOnly: true,
     }
   };
 
