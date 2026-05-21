@@ -150,7 +150,7 @@ export default function UnitFormPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/units"] });
       toast({ title: isEdit ? "Véhicule mis à jour" : "Véhicule créé avec succès" });
-      navigate("/units");
+      navigate("/vehicules");
     },
     onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
@@ -169,7 +169,7 @@ export default function UnitFormPage() {
   return (
     <Layout>
       <div className="mb-6 flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/units")}>
+        <Button variant="ghost" size="icon" onClick={() => navigate("/vehicules")}>
           <ChevronLeft className="h-5 w-5" />
         </Button>
         <div>
@@ -403,7 +403,7 @@ export default function UnitFormPage() {
         </Card>
 
         <div className="flex gap-3 pb-8">
-          <Button type="button" variant="outline" onClick={() => navigate("/units")} className="flex-1 md:flex-none md:w-32">
+          <Button type="button" variant="outline" onClick={() => navigate("/vehicules")} className="flex-1 md:flex-none md:w-32">
             Annuler
           </Button>
           <Button type="submit" className="flex-1 md:flex-none md:w-48 bg-[#f5901d] hover:bg-[#e07d0b]"

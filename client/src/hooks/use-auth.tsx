@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       // Full page reload so the browser sends the new session cookie
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        window.location.href = "/tableau-de-bord";
       }, 600);
     },
     onError: (error: Error) => {
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: `Bienvenue, ${user.fullName}!`,
       });
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        window.location.href = "/tableau-de-bord";
       }, 600);
     },
     onError: (error: Error) => {

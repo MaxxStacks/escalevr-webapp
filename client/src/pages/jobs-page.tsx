@@ -161,7 +161,7 @@ export default function JobsPage() {
         <h1 className="text-2xl font-bold tracking-tight text-[#465c50]">Services</h1>
         {(user?.role === "admin" || user?.role === "service") && (
           <Button 
-            onClick={() => setLocation("/jobs/new")}
+            onClick={() => setLocation("/travaux/nouveau")}
             className="bg-[#f5901d] hover:bg-[#e07d0b]"
           >
             <Plus className="mr-2 h-4 w-4" />
@@ -284,7 +284,7 @@ export default function JobsPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setLocation(`/jobs/${job.id}`)}
+                          onClick={() => setLocation(`/travaux/${job.id}`)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>

@@ -29,29 +29,29 @@ function Router() {
   return (
     <Switch>
       <ProtectedRoute path="/" component={HomePage} />
-      <Route path="/auth" component={AuthPage} />
-      <ProtectedRoute path="/dashboard" component={DashboardPage} />
-      <ProtectedRoute path="/jobs" component={JobsPage} />
-      <ProtectedRoute path="/jobs/new" component={JobNewPage} />
-      <ProtectedRoute path="/jobs/:id" component={JobDetailPage} />
-      <ProtectedRoute path="/schedule" component={SchedulePage} />
-      <ProtectedRoute path="/units" component={UnitsPage} />
-      <ProtectedRoute path="/units/new" component={UnitFormPage} />
-      <ProtectedRoute path="/units/:id/edit" component={UnitFormPage} />
+      <Route path="/connexion" component={AuthPage} />
+      <ProtectedRoute path="/tableau-de-bord" component={DashboardPage} />
+      <ProtectedRoute path="/travaux" component={JobsPage} />
+      <ProtectedRoute path="/travaux/nouveau" component={JobNewPage} />
+      <ProtectedRoute path="/travaux/:id" component={JobDetailPage} />
+      <ProtectedRoute path="/calendrier" component={SchedulePage} />
+      <ProtectedRoute path="/vehicules" component={UnitsPage} />
+      <ProtectedRoute path="/vehicules/nouveau" component={UnitFormPage} />
+      <ProtectedRoute path="/vehicules/:id/modifier" component={UnitFormPage} />
       <ProtectedRoute path="/clients" component={ClientsPage} />
-      <ProtectedRoute path="/clients/new" component={ClientFormPage} />
-      <ProtectedRoute path="/clients/:id/edit" component={ClientFormPage} />
-      <ProtectedRoute path="/staff/new" component={StaffFormPage} />
-      <ProtectedRoute path="/staff/:id/edit" component={StaffFormPage} />
-      <ProtectedRoute path="/technicians" component={TechniciansPage} />
-      <ProtectedRoute path="/service-agents" component={ServiceAgentsPage} />
-      <ProtectedRoute path="/claim-agents" component={ClaimAgentsPage} />
-      <ProtectedRoute path="/finance-agents" component={FinanceAgentsPage} />
-      <ProtectedRoute path="/users" component={UserManagementPage} />
-      <ProtectedRoute path="/chat" component={ChatPage} />
-      <ProtectedRoute path="/chat/:roomId" component={ChatPage} />
-      <ProtectedRoute path="/settings" component={SettingsPage} />
-      <ProtectedRoute path="/support" component={SupportPage} />
+      <ProtectedRoute path="/clients/nouveau" component={ClientFormPage} />
+      <ProtectedRoute path="/clients/:id/modifier" component={ClientFormPage} />
+      <ProtectedRoute path="/employes/nouveau" component={StaffFormPage} />
+      <ProtectedRoute path="/employes/:id/modifier" component={StaffFormPage} />
+      <ProtectedRoute path="/techniciens" component={TechniciansPage} />
+      <ProtectedRoute path="/agents-service" component={ServiceAgentsPage} />
+      <ProtectedRoute path="/agents-reclamation" component={ClaimAgentsPage} />
+      <ProtectedRoute path="/agents-financement" component={FinanceAgentsPage} />
+      <ProtectedRoute path="/utilisateurs" component={UserManagementPage} />
+      <ProtectedRoute path="/messagerie" component={ChatPage} />
+      <ProtectedRoute path="/messagerie/:roomId" component={ChatPage} />
+      <ProtectedRoute path="/parametres" component={SettingsPage} />
+      <ProtectedRoute path="/assistance" component={SupportPage} />
       <Route component={NotFound} />
     </Switch>
   );

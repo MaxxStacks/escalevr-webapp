@@ -52,22 +52,22 @@ export default function QuickActions() {
       { 
         label: translations["New Service Request"], 
         icon: <PlusCircle className="h-5 w-5" />, 
-        href: "/jobs/new"
+        href: "/travaux/nouveau"
       },
       { 
         label: translations["Schedule Appointment"], 
         icon: <Calendar className="h-5 w-5" />, 
-        href: "/schedule"
+        href: "/calendrier"
       },
       { 
         label: translations["View My RVs"], 
         icon: <Truck className="h-5 w-5" />, 
-        href: "/units"
+        href: "/vehicules"
       },
       { 
         label: translations["Service History"], 
         icon: <FileText className="h-5 w-5" />, 
-        href: "/jobs"
+        href: "/travaux"
       },
       { 
         label: translations["Call Service"], 
@@ -79,34 +79,34 @@ export default function QuickActions() {
       { 
         label: translations["Update Status"], 
         icon: <Wrench className="h-5 w-5" />, 
-        href: "/jobs"
+        href: "/travaux"
       },
       { 
         label: translations["Upload Photos"], 
         icon: <Camera className="h-5 w-5" />, 
-        href: "/jobs"
+        href: "/travaux"
       },
       { 
         label: translations["New Inspection"], 
         icon: <ClipboardCheck className="h-5 w-5" />, 
-        href: "/jobs/new"
+        href: "/travaux/nouveau"
       },
       { 
         label: translations["Complete Job"], 
         icon: <BadgeCheck className="h-5 w-5" />, 
-        href: "/jobs"
+        href: "/travaux"
       },
     ],
     service: [
       { 
         label: translations["Add Unit"], 
         icon: <Truck className="h-5 w-5" />, 
-        href: "/units/new"
+        href: "/vehicules/nouveau"
       },
       { 
         label: translations["Schedule Appointment"], 
         icon: <Calendar className="h-5 w-5" />, 
-        href: "/schedule"
+        href: "/calendrier"
       },
       { 
         label: translations["Contact Client"], 
@@ -116,7 +116,7 @@ export default function QuickActions() {
       { 
         label: translations["New Service Request"], 
         icon: <FileText className="h-5 w-5" />, 
-        href: "/jobs/new"
+        href: "/travaux/nouveau"
       },
     ],
     claim_agent: [
@@ -138,29 +138,29 @@ export default function QuickActions() {
       { 
         label: translations["Upload Photos"], 
         icon: <Camera className="h-5 w-5" />, 
-        href: "/jobs"
+        href: "/travaux"
       },
     ],
     admin: [
       { 
         label: translations["New Service Request"], 
         icon: <PlusCircle className="h-5 w-5" />, 
-        href: "/jobs/new"
+        href: "/travaux/nouveau"
       },
       { 
         label: translations["Schedule Appointment"], 
         icon: <Calendar className="h-5 w-5" />, 
-        href: "/schedule"
+        href: "/calendrier"
       },
       { 
         label: translations["Add Unit"], 
         icon: <Truck className="h-5 w-5" />, 
-        href: "/units/new"
+        href: "/vehicules/nouveau"
       },
       { 
         label: translations["Settings"], 
         icon: <SettingsIcon className="h-5 w-5" />, 
-        href: "/settings"
+        href: "/parametres"
       },
     ]
   };

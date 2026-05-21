@@ -11,7 +11,7 @@ export default function HomePage() {
   useEffect(() => {
     if (!isLoading && user) {
       // Redirect to appropriate landing page based on user role
-      setLocation("/dashboard");
+      setLocation("/tableau-de-bord");
     }
   }, [isLoading, user, setLocation]);
 

@@ -109,7 +109,7 @@ export default function UnitsPage() {
         </div>
         
         {['admin', 'service'].includes(user?.role as string) && (
-          <Button className="mt-4 md:mt-0 bg-[#f5901d] hover:bg-[#e07d0b]" onClick={() => navigate("/units/new")}>
+          <Button className="mt-4 md:mt-0 bg-[#f5901d] hover:bg-[#e07d0b]" onClick={() => navigate("/vehicules/nouveau")}>
             <Plus className="h-4 w-4 mr-2" />
             Ajouter un véhicule
           </Button>
@@ -173,7 +173,7 @@ export default function UnitsPage() {
                   Voir détails
                 </Button>
                 {['admin', 'service'].includes(user?.role as string) && (
-                  <Button variant="ghost" size="sm" onClick={() => navigate(`/units/${unit.id}/edit`)}>
+                  <Button variant="ghost" size="sm" onClick={() => navigate(`/vehicules/${unit.id}/modifier`)}>
                     <Edit className="h-4 w-4 mr-2" />
                     Modifier
                   </Button>
@@ -295,7 +295,7 @@ export default function UnitsPage() {
               <DialogFooter className="flex justify-between pt-2 border-t">
                 {['admin', 'service'].includes(user?.role as string) && (
                   <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => { setShowUnitDialog(false); navigate(`/units/${selectedUnit.id}/edit`); }}>
+                    <Button variant="outline" onClick={() => { setShowUnitDialog(false); navigate(`/vehicules/${selectedUnit.id}/modifier`); }}>
                       <Edit className="h-4 w-4 mr-2" /> Modifier
                     </Button>
                     {user?.role === 'admin' && (

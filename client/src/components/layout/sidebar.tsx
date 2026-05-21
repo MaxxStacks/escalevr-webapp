@@ -59,48 +59,48 @@ export default function Sidebar() {
 
   const getNavItems = () => {
     const mainItems = [
-      { path: "/dashboard", label: translations["Dashboard"], icon: <LayoutDashboard className="h-5 w-5" /> },
-      { path: "/jobs", label: translations["Jobs"], icon: <Wrench className="h-5 w-5" /> },
-      { path: "/schedule", label: translations["Schedule"], icon: <Calendar className="h-5 w-5" /> },
-      { path: "/units", label: translations["Units"], icon: <Truck className="h-5 w-5" /> },
+      { path: "/tableau-de-bord", label: translations["Dashboard"], icon: <LayoutDashboard className="h-5 w-5" /> },
+      { path: "/travaux", label: translations["Jobs"], icon: <Wrench className="h-5 w-5" /> },
+      { path: "/calendrier", label: translations["Schedule"], icon: <Calendar className="h-5 w-5" /> },
+      { path: "/vehicules", label: translations["Units"], icon: <Truck className="h-5 w-5" /> },
     ];
 
     const userItems = [];
     
     if (user?.role === "admin") {
       userItems.push(
-        { path: "/users?role=admin", label: "Admin", icon: <User className="h-5 w-5" /> }
+        { path: "/utilisateurs?role=admin", label: "Admin", icon: <User className="h-5 w-5" /> }
       );
     }
-    
+
     if (["admin", "service"].includes(user?.role as string)) {
       userItems.push(
         { path: "/clients", label: translations["Clients"], icon: <Users className="h-5 w-5" /> }
       );
     }
-    
+
     if (user?.role === "admin") {
       userItems.push(
-        { path: "/service-agents", label: translations["Service"], icon: <Users className="h-5 w-5" /> }
+        { path: "/agents-service", label: translations["Service"], icon: <Users className="h-5 w-5" /> }
       );
     }
-    
+
     if (["admin", "service"].includes(user?.role as string)) {
       userItems.push(
-        { path: "/technicians", label: translations["Technicians"], icon: <User className="h-5 w-5" /> }
+        { path: "/techniciens", label: translations["Technicians"], icon: <User className="h-5 w-5" /> }
       );
     }
-    
+
     if (user?.role === "admin") {
       userItems.push(
-        { path: "/claim-agents", label: translations["Claims"], icon: <Users className="h-5 w-5" /> },
-        { path: "/finance-agents", label: "Financement", icon: <Users className="h-5 w-5" /> },
-        { path: "/users", label: "Tous les utilisateurs", icon: <Users className="h-5 w-5" /> }
+        { path: "/agents-reclamation", label: translations["Claims"], icon: <Users className="h-5 w-5" /> },
+        { path: "/agents-financement", label: "Financement", icon: <Users className="h-5 w-5" /> },
+        { path: "/utilisateurs", label: "Tous les utilisateurs", icon: <Users className="h-5 w-5" /> }
       );
     }
 
     const settingsItem = [
-      { path: "/settings", label: translations["Settings"], icon: <Settings className="h-5 w-5" /> }
+      { path: "/parametres", label: translations["Settings"], icon: <Settings className="h-5 w-5" /> }
     ];
 
     return { mainItems, userItems, settingsItem };
@@ -111,7 +111,7 @@ export default function Sidebar() {
   const handleLogoutConfirm = () => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
-        window.location.href = "/auth";
+        window.location.href = "/connexion";
       }
     });
     setShowLogoutDialog(false);
@@ -202,11 +202,11 @@ export default function Sidebar() {
           
           <div 
             className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-              location === "/support"
+              location === "/assistance"
                 ? "bg-primary text-primary-foreground"
                 : "text-foreground hover:bg-primary/10 hover:text-primary"
             }`}
-            onClick={() => handleNavigation("/support")}
+            onClick={() => handleNavigation("/assistance")}
           >
             <HelpCircle className="h-5 w-5 mr-3" />
             {translations["Help & Support"]}
@@ -214,11 +214,11 @@ export default function Sidebar() {
           
           <div
             className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-              location.startsWith("/chat")
+              location.startsWith("/messagerie")
                 ? "bg-primary text-primary-foreground"
                 : "text-foreground hover:bg-primary/10 hover:text-primary"
             }`}
-            onClick={() => handleNavigation("/chat")}
+            onClick={() => handleNavigation("/messagerie")}
           >
             <MessageSquare className="h-5 w-5 mr-3" />
             Messagerie

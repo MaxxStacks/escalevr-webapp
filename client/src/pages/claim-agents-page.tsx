@@ -300,7 +300,7 @@ export default function ClaimAgentsPage() {
         </div>
         <Button
           className="flex items-center gap-1 bg-[#f5901d] hover:bg-[#e07d0b]"
-          onClick={() => navigate("/staff/new?role=claim_agent")}
+          onClick={() => navigate("/employes/nouveau?role=claim_agent")}
         >
           <UserPlus className="h-4 w-4 mr-1" />
           Ajouter un agent
@@ -355,7 +355,7 @@ export default function ClaimAgentsPage() {
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">Voir</span>
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => navigate(`/staff/${agent.id}/edit?role=claim_agent`)}>
+                      <Button variant="ghost" size="sm" onClick={() => navigate(`/employes/${agent.id}/modifier?role=claim_agent`)}>
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Modifier</span>
                       </Button>
@@ -441,7 +441,7 @@ export default function ClaimAgentsPage() {
               </div>
               
               <DialogFooter>
-                <Button variant="outline" onClick={() => { setSelectedAgent(null); navigate(`/staff/${selectedAgent.id}/edit?role=claim_agent`); }}>
+                <Button variant="outline" onClick={() => { setSelectedAgent(null); navigate(`/employes/${selectedAgent.id}/modifier?role=claim_agent`); }}>
                   <Edit className="h-4 w-4 mr-2" />
                   Modifier cet agent
                 </Button>

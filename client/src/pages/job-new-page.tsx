@@ -130,7 +130,7 @@ export default function JobNewPage() {
         title: "Service créé avec succès",
         description: "Le nouveau service a été créé",
       });
-      setLocation("/jobs");
+      setLocation("/travaux");
     },
     onError: (error: Error) => {
       toast({
@@ -148,7 +148,7 @@ export default function JobNewPage() {
 
   // Go back to jobs list
   const handleBack = () => {
-    setLocation("/jobs");
+    setLocation("/travaux");
   };
 
   return (

@@ -294,7 +294,7 @@ export default function ServiceAgentsPage() {
         </div>
         <Button
           className="flex items-center gap-1 bg-[#f5901d] hover:bg-[#e07d0b]"
-          onClick={() => navigate("/staff/new?role=service")}
+          onClick={() => navigate("/employes/nouveau?role=service")}
         >
           <UserPlus className="h-4 w-4 mr-1" />
           Ajouter un agent
@@ -347,7 +347,7 @@ export default function ServiceAgentsPage() {
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">Voir</span>
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => navigate(`/staff/${agent.id}/edit?role=service`)}>
+                      <Button variant="ghost" size="sm" onClick={() => navigate(`/employes/${agent.id}/modifier?role=service`)}>
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Modifier</span>
                       </Button>
@@ -417,7 +417,7 @@ export default function ServiceAgentsPage() {
               </div>
               
               <DialogFooter>
-                <Button variant="outline" onClick={() => { setSelectedAgent(null); navigate(`/staff/${selectedAgent.id}/edit?role=service`); }}>
+                <Button variant="outline" onClick={() => { setSelectedAgent(null); navigate(`/employes/${selectedAgent.id}/modifier?role=service`); }}>
                   <Edit className="h-4 w-4 mr-2" />
                   Modifier cet agent
                 </Button>

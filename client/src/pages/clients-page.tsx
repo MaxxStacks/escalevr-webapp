@@ -268,7 +268,7 @@ export default function ClientsPage() {
         {['admin', 'service'].includes(user?.role as string) && (
           <Button
             className="mt-4 md:mt-0 bg-[#f5901d] hover:bg-[#e07d0b]"
-            onClick={() => navigate("/clients/new")}
+            onClick={() => navigate("/clients/nouveau")}
           >
             <Plus className="h-4 w-4 mr-2" />
             Ajouter un client
@@ -321,7 +321,7 @@ export default function ClientsPage() {
                           <span className="sr-only">Voir</span>
                         </Button>
                         {['admin', 'service'].includes(user?.role as string) && (
-                          <Button variant="ghost" size="sm" onClick={() => navigate(`/clients/${client.id}/edit`)}>
+                          <Button variant="ghost" size="sm" onClick={() => navigate(`/clients/${client.id}/modifier`)}>
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Modifier</span>
                           </Button>
@@ -415,7 +415,7 @@ export default function ClientsPage() {
 
               <DialogFooter className="pt-2 border-t">
                 {['admin', 'service'].includes(user?.role as string) && (
-                  <Button variant="outline" onClick={() => { setSelectedClient(null); navigate(`/clients/${selectedClient.id}/edit`); }}>
+                  <Button variant="outline" onClick={() => { setSelectedClient(null); navigate(`/clients/${selectedClient.id}/modifier`); }}>
                     <Edit className="h-4 w-4 mr-2" /> Modifier ce client
                   </Button>
                 )}

@@ -100,9 +100,9 @@ export default function Header({ onMobileMenuToggle }: { onMobileMenuToggle?: ()
   const handleNotificationClick = (n: Notification) => {
     markOneMutation.mutate(n.id);
     if (n.title?.includes("vous a envoyé un message") && n.relatedId) {
-      window.location.href = `/chat/${n.relatedId}`;
+      window.location.href = `/messagerie/${n.relatedId}`;
     } else if (n.type === "job" && n.relatedId) {
-      window.location.href = `/jobs`;
+      window.location.href = `/travaux`;
     }
   };
 
@@ -135,25 +135,25 @@ export default function Header({ onMobileMenuToggle }: { onMobileMenuToggle?: ()
   };
 
   const navItems = [
-    { path: "/dashboard", label: translations["Dashboard"], icon: <LayoutDashboard className="h-5 w-5" /> },
-    { path: "/jobs", label: translations["Jobs"], icon: <Wrench className="h-5 w-5" /> },
-    { path: "/schedule", label: translations["Schedule"], icon: <Calendar className="h-5 w-5" /> },
-    { path: "/units", label: translations["Units"], icon: <Truck className="h-5 w-5" /> },
+    { path: "/tableau-de-bord", label: translations["Dashboard"], icon: <LayoutDashboard className="h-5 w-5" /> },
+    { path: "/travaux", label: translations["Jobs"], icon: <Wrench className="h-5 w-5" /> },
+    { path: "/calendrier", label: translations["Schedule"], icon: <Calendar className="h-5 w-5" /> },
+    { path: "/vehicules", label: translations["Units"], icon: <Truck className="h-5 w-5" /> },
   ];
 
   if (["admin", "service"].includes(user?.role as string)) {
     navItems.push(
       { path: "/clients", label: translations["Clients"], icon: <Users className="h-5 w-5" /> },
-      { path: "/technicians", label: translations["Technicians"], icon: <User className="h-5 w-5" /> }
+      { path: "/techniciens", label: translations["Technicians"], icon: <User className="h-5 w-5" /> }
     );
   }
 
-  navItems.push({ path: "/settings", label: translations["Settings"], icon: <Settings className="h-5 w-5" /> });
+  navItems.push({ path: "/parametres", label: translations["Settings"], icon: <Settings className="h-5 w-5" /> });
 
   const handleLogoutConfirm = () => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
-        window.location.href = "/auth";
+        window.location.href = "/connexion";
       }
     });
     setShowLogoutDialog(false);
@@ -179,7 +179,7 @@ export default function Header({ onMobileMenuToggle }: { onMobileMenuToggle?: ()
           {/* Page Title - Desktop */}
           <div className="hidden md:block">
             <h1 className="text-xl font-semibold text-foreground">
-              {location === '/' || location === '/dashboard' 
+              {location === '/' || location === '/tableau-de-bord'
                 ? translations["Dashboard"] 
                 : navItems.find(item => item.path === location)?.label || 'GestionVR'}
             </h1>
@@ -282,7 +282,7 @@ export default function Header({ onMobileMenuToggle }: { onMobileMenuToggle?: ()
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.location.href = '/settings'}>
+                <DropdownMenuItem onClick={() => window.location.href = '/parametres'}>
                   <User className="mr-2 h-4 w-4" />
                   <span>{translations["Profile"]}</span>
                 </DropdownMenuItem>
@@ -351,33 +351,33 @@ export default function Header({ onMobileMenuToggle }: { onMobileMenuToggle?: ()
                     
                     <div className="my-4 border-t border-border"></div>
                     
-                    <a 
-                      href="/chat"
+                    <a
+                      href="/messagerie"
                       className={`flex items-center px-2 py-2 text-base ${
-                        location === "/chat"
+                        location === "/messagerie"
                           ? "text-primary font-medium"
                           : "text-foreground hover:text-primary"
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
-                        window.location.href = "/chat";
+                        window.location.href = "/messagerie";
                         setShowMobileMenu(false);
                       }}
                     >
                       <MessageSquare className="mr-3 h-5 w-5" />
                       Messagerie
                     </a>
-                    
-                    <a 
-                      href="/support"
+
+                    <a
+                      href="/assistance"
                       className={`flex items-center px-2 py-2 text-base ${
-                        location === "/support"
+                        location === "/assistance"
                           ? "text-primary font-medium"
                           : "text-foreground hover:text-primary"
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
-                        window.location.href = "/support";
+                        window.location.href = "/assistance";
                         setShowMobileMenu(false);
                       }}
                     >

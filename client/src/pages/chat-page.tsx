@@ -422,7 +422,7 @@ export default function ChatPage() {
                             key={room.id}
                             variant={room.id === Number(roomId) ? "default" : "ghost"}
                             className="w-full justify-start"
-                            onClick={() => setLocation(`/chat/${room.id}`)}
+                            onClick={() => setLocation(`/messagerie/${room.id}`)}
                           >
                             <MessageSquare className="mr-2 h-4 w-4" />
                             <span className="truncate">{room.name}</span>
@@ -449,7 +449,7 @@ export default function ChatPage() {
                             key={room.id}
                             variant={room.id === Number(roomId) ? "default" : "ghost"}
                             className="w-full justify-start"
-                            onClick={() => setLocation(`/chat/${room.id}`)}
+                            onClick={() => setLocation(`/messagerie/${room.id}`)}
                           >
                             <MessageSquare className="mr-2 h-4 w-4" />
                             <span className="truncate">{room.name}</span>

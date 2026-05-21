@@ -108,7 +108,7 @@ export default function FinanceAgentsPage() {
         </div>
         <Button
           className="flex items-center gap-1 bg-[#f5901d] hover:bg-[#e07d0b]"
-          onClick={() => navigate("/staff/new?role=financement")}
+          onClick={() => navigate("/employes/nouveau?role=financement")}
         >
           <UserPlus className="h-4 w-4 mr-1" />
           Ajouter un agent
@@ -165,7 +165,7 @@ export default function FinanceAgentsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => navigate(`/staff/${agent.id}/edit?role=financement`)}
+                        onClick={() => navigate(`/employes/${agent.id}/modifier?role=financement`)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -230,7 +230,7 @@ export default function FinanceAgentsPage() {
                   onClick={() => {
                     const agent = selectedAgent;
                     setSelectedAgent(null);
-                    navigate(`/staff/${agent.id}/edit?role=financement`);
+                    navigate(`/employes/${agent.id}/modifier?role=financement`);
                   }}
                 >
                   <Edit className="h-4 w-4 mr-2" />

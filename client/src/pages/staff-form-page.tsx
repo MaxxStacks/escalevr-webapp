@@ -18,11 +18,11 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 const ROLE_BACK: Record<string, string> = {
-  service: "/service-agents",
-  technician: "/technicians",
-  claim_agent: "/claim-agents",
-  financement: "/finance-agents",
-  admin: "/users",
+  service: "/agents-service",
+  technician: "/techniciens",
+  claim_agent: "/agents-reclamation",
+  financement: "/agents-financement",
+  admin: "/utilisateurs",
 };
 
 export default function StaffFormPage() {
@@ -96,7 +96,7 @@ export default function StaffFormPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/role/${form.role}`] });
       toast({ title: isEdit ? "Employé mis à jour" : "Employé créé avec succès" });
-      navigate(ROLE_BACK[form.role] || "/users");
+      navigate(ROLE_BACK[form.role] || "/utilisateurs");
     },
     onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
@@ -104,7 +104,7 @@ export default function StaffFormPage() {
   const f = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm(p => ({ ...p, [key]: e.target.value }));
 
-  const backPath = ROLE_BACK[form.role] || "/users";
+  const backPath = ROLE_BACK[form.role] || "/utilisateurs";
 
   if (isEdit && isLoading) {
     return <Layout><div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div></Layout>;

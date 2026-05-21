@@ -397,7 +397,7 @@ export default function DashboardPage() {
             
             <CardFooter className="flex justify-center p-4 bg-muted/30">
               <Button variant="ghost" className="text-primary" asChild>
-                <a href="/jobs" className="flex items-center">
+                <a href="/travaux" className="flex items-center">
                   {translations["View all jobs"]}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>

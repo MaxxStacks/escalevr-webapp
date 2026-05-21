@@ -445,8 +445,8 @@ export default function UserManagementPage() {
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
                         <Button variant="ghost" size="sm" onClick={() => {
-                          if (user.role === "client") navigate(`/clients/${user.id}/edit`);
-                          else navigate(`/staff/${user.id}/edit?role=${user.role}`);
+                          if (user.role === "client") navigate(`/clients/${user.id}/modifier`);
+                          else navigate(`/employes/${user.id}/modifier?role=${user.role}`);
                         }}>
                           <Edit className="h-4 w-4" />
                         </Button>

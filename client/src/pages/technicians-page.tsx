@@ -281,7 +281,7 @@ export default function TechniciansPage() {
         {['admin', 'service'].includes(user?.role as string) && (
           <Button
             className="mt-4 md:mt-0 bg-[#f5901d] hover:bg-[#e07d0b]"
-            onClick={() => navigate("/staff/new?role=technician")}
+            onClick={() => navigate("/employes/nouveau?role=technician")}
           >
             <Plus className="h-4 w-4 mr-2" />
             Ajouter un technicien
@@ -334,7 +334,7 @@ export default function TechniciansPage() {
                           <span className="sr-only">Voir</span>
                         </Button>
                         {['admin', 'service'].includes(user?.role as string) && (
-                          <Button variant="ghost" size="sm" onClick={() => navigate(`/staff/${tech.id}/edit?role=technician`)}>
+                          <Button variant="ghost" size="sm" onClick={() => navigate(`/employes/${tech.id}/modifier?role=technician`)}>
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Modifier</span>
                           </Button>
@@ -448,7 +448,7 @@ export default function TechniciansPage() {
               
               <DialogFooter>
                 {['admin', 'service'].includes(user?.role as string) && (
-                  <Button variant="outline" onClick={() => { setSelectedTechnician(null); navigate(`/staff/${selectedTechnician.id}/edit?role=technician`); }}>
+                  <Button variant="outline" onClick={() => { setSelectedTechnician(null); navigate(`/employes/${selectedTechnician.id}/modifier?role=technician`); }}>
                     <Edit className="h-4 w-4 mr-2" />
                     Modifier ce technicien
                   </Button>

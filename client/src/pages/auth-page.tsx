@@ -54,7 +54,7 @@ export default function AuthPage() {
   // Redirect after successful login
   useEffect(() => {
     if (user) {
-      setLocation("/");
+      setLocation("/tableau-de-bord");
     }
   }, [user, setLocation]);
 
@@ -95,7 +95,7 @@ export default function AuthPage() {
   
   // If user is already logged in, redirect to home page
   if (user) {
-    return <Redirect to="/" />;
+    return <Redirect to="/tableau-de-bord" />;
   }
 
   return (

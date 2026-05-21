@@ -44,7 +44,7 @@ export default function JobDetailPage() {
           <Button 
             variant="ghost" 
             className="p-0 h-auto" 
-            onClick={() => setLocation("/jobs")}
+            onClick={() => setLocation("/travaux")}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Jobs
@@ -79,7 +79,7 @@ export default function JobDetailPage() {
   if (error || !job) {
     return (
       <div className="container py-6">
-        <Button variant="ghost" onClick={() => setLocation("/jobs")}>
+        <Button variant="ghost" onClick={() => setLocation("/travaux")}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Jobs
         </Button>
@@ -106,7 +106,7 @@ export default function JobDetailPage() {
         <Button 
           variant="ghost" 
           className="p-0 h-auto" 
-          onClick={() => setLocation("/jobs")}
+          onClick={() => setLocation("/travaux")}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Jobs
@@ -291,7 +291,7 @@ export default function JobDetailPage() {
             {(user?.role === "claim_agent" || user?.role === "admin" || user?.role === "service") && (
               <Button 
                 className="mt-4 bg-[#465c50] hover:bg-[#354940]"
-                onClick={() => setLocation(`/jobs/${job.id}/claims/create`)}
+                onClick={() => setLocation(`/travaux/${job.id}/reclamations/creer`)}
               >
                 <FilePlus className="mr-2 h-4 w-4" />
                 Create Claim
