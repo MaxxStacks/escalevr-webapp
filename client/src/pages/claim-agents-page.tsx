@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useForm } from "react-hook-form";
@@ -75,6 +76,7 @@ type AgentFormValues = z.infer<typeof agentSchema>;
 export default function ClaimAgentsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const [isAddAgentDialogOpen, setIsAddAgentDialogOpen] = useState(false);
@@ -296,9 +298,9 @@ export default function ClaimAgentsPage() {
             Gérer les utilisateurs ayant le rôle "Agent de réclamation"
           </p>
         </div>
-        <Button 
+        <Button
           className="flex items-center gap-1 bg-[#f5901d] hover:bg-[#e07d0b]"
-          onClick={handleAddAgent}
+          onClick={() => navigate("/staff/new?role=claim_agent")}
         >
           <UserPlus className="h-4 w-4 mr-1" />
           Ajouter un agent
@@ -353,7 +355,7 @@ export default function ClaimAgentsPage() {
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">Voir</span>
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleEditAgent(agent)}>
+                      <Button variant="ghost" size="sm" onClick={() => navigate(`/staff/${agent.id}/edit?role=claim_agent`)}>
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Modifier</span>
                       </Button>
@@ -439,10 +441,7 @@ export default function ClaimAgentsPage() {
               </div>
               
               <DialogFooter>
-                <Button variant="outline" onClick={() => {
-                  setSelectedAgent(null);
-                  handleEditAgent(selectedAgent);
-                }}>
+                <Button variant="outline" onClick={() => { setSelectedAgent(null); navigate(`/staff/${selectedAgent.id}/edit?role=claim_agent`); }}>
                   <Edit className="h-4 w-4 mr-2" />
                   Modifier cet agent
                 </Button>

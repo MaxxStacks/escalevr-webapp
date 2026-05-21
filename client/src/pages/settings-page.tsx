@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import Layout from "@/components/layout/layout";
 import { useForm } from "react-hook-form";
@@ -7,7 +7,8 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   Card,
@@ -68,6 +69,43 @@ export default function SettingsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("profile");
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const getInitials = (name: string) =>
+    name.split(" ").map(n => n[0]).join("").toUpperCase();
+
+  const uploadPhotoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("photo", file);
+      const res = await fetch(`/api/users/${user?.id}/avatar`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Échec du téléversement");
+      return res.json() as Promise<{ avatarUrl: string }>;
+    },
+    onSuccess: (data) => {
+      setAvatarPreview(data.avatarUrl);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({ title: "Photo mise à jour", description: "Votre photo de profil a été mise à jour." });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Impossible de mettre à jour la photo.", variant: "destructive" });
+    },
+  });
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatarPreview(reader.result as string);
+    reader.readAsDataURL(file);
+    uploadPhotoMutation.mutate(file);
+    if (photoInputRef.current) photoInputRef.current.value = "";
+  };
   
   // Profile form
   const profileForm = useForm<ProfileFormValues>({
@@ -222,6 +260,45 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {/* Photo upload */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="relative">
+                  <Avatar className="h-20 w-20">
+                    {(avatarPreview || user?.avatarUrl) ? (
+                      <AvatarImage src={avatarPreview || user?.avatarUrl || undefined} alt={user?.fullName || undefined} />
+                    ) : (
+                      <AvatarFallback className="text-lg bg-primary/10 text-primary">
+                        {user?.fullName ? getInitials(user.fullName) : "?"}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <button
+                    type="button"
+                    onClick={() => photoInputRef.current?.click()}
+                    className="absolute -bottom-1 -right-1 bg-[#f5901d] text-white rounded-full p-1.5 hover:bg-[#e07d0b] transition-colors"
+                    title="Changer la photo"
+                  >
+                    {uploadPhotoMutation.isPending ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Camera className="h-3 w-3" />
+                    )}
+                  </button>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{user?.fullName}</p>
+                  <p className="text-xs text-muted-foreground mb-1">{user?.role}</p>
+                  <button
+                    type="button"
+                    onClick={() => photoInputRef.current?.click()}
+                    className="text-xs text-[#f5901d] hover:underline"
+                  >
+                    Changer la photo de profil
+                  </button>
+                </div>
+                <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+              </div>
+
               <Form {...profileForm}>
                 <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
                   <FormField
@@ -243,7 +320,7 @@ export default function SettingsPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Courriel</FormLabel>
                         <FormControl>
                           <Input type="email" {...field} />
                         </FormControl>

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
-import { 
-  Menu, 
-  Search, 
-  Bell, 
-  HelpCircle, 
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import {
+  Menu,
+  Search,
+  Bell,
+  HelpCircle,
   LogOut,
   LayoutDashboard,
   MessageSquare,
@@ -15,11 +17,14 @@ import {
   Users,
   User,
   Settings,
+  CheckCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +44,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import escaleLogo from "../../assets/escale-logo-dark.png";
+
+interface Notification {
+  id: number;
+  userId: number;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  relatedId: number | null;
+  createdAt: string;
+}
 
 const translations = {
   "Search for jobs, units, or clients...": "Rechercher des services, véhicules ou clients...",
@@ -62,6 +78,34 @@ export default function Header({ onMobileMenuToggle }: { onMobileMenuToggle?: ()
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
+  const { data: notifications = [] } = useQuery<Notification[]>({
+    queryKey: ["/api/notifications"],
+    queryFn: () => apiRequest("GET", "/api/notifications").then(r => r.json()),
+    refetchInterval: 30000,
+    enabled: !!user,
+  });
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+
+  const markReadMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/notifications/read-all"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/notifications"] }),
+  });
+
+  const markOneMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("POST", `/api/notifications/read/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/notifications"] }),
+  });
+
+  const handleNotificationClick = (n: Notification) => {
+    markOneMutation.mutate(n.id);
+    if (n.title?.includes("vous a envoyé un message") && n.relatedId) {
+      window.location.href = `/chat/${n.relatedId}`;
+    } else if (n.type === "job" && n.relatedId) {
+      window.location.href = `/jobs`;
+    }
+  };
+
   const getInitials = (name: string) => {
     if (!name) return 'U';
     return name
@@ -77,7 +121,8 @@ export default function Header({ onMobileMenuToggle }: { onMobileMenuToggle?: ()
       'claim_agent': 'Agent de réclamation',
       'technician': 'Technicien',
       'service': 'Service',
-      'client': 'Client'
+      'client': 'Client',
+      'financement': 'Financement',
     };
     return roleMap[role] || role.charAt(0).toUpperCase() + role.slice(1);
   };
@@ -160,10 +205,57 @@ export default function Header({ onMobileMenuToggle }: { onMobileMenuToggle?: ()
               <HelpCircle className="h-5 w-5" />
             </Button>
             
-            <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground hover:bg-primary/10 rounded-full">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-secondary ring-2 ring-white dark:ring-gray-800"></span>
-            </Button>
+            <DropdownMenu onOpenChange={(open) => { if (open && unreadCount > 0) markReadMutation.mutate(); }}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground hover:bg-primary/10 rounded-full">
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#f5901d] text-[9px] font-bold text-white ring-2 ring-white">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel className="flex items-center justify-between">
+                  <span>Notifications</span>
+                  {unreadCount > 0 && (
+                    <Badge variant="secondary" className="text-xs">{unreadCount} non lues</Badge>
+                  )}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {notifications.length === 0 ? (
+                  <div className="py-6 text-center text-sm text-muted-foreground">
+                    Aucune notification
+                  </div>
+                ) : (
+                  <ScrollArea className="max-h-72">
+                    {notifications.slice(0, 20).map(n => (
+                      <DropdownMenuItem
+                        key={n.id}
+                        className={`flex flex-col items-start gap-0.5 cursor-pointer px-3 py-2 ${!n.isRead ? "bg-primary/5" : ""}`}
+                        onClick={() => handleNotificationClick(n)}
+                      >
+                        <span className={`text-sm ${!n.isRead ? "font-semibold" : "font-normal"}`}>{n.title}</span>
+                        <span className="text-xs text-muted-foreground">{n.message}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </ScrollArea>
+                )}
+                {notifications.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-xs text-center justify-center text-muted-foreground"
+                      onClick={() => markReadMutation.mutate()}
+                    >
+                      <CheckCheck className="h-3 w-3 mr-1" />
+                      Tout marquer comme lu
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             {/* User Dropdown */}
             <DropdownMenu>

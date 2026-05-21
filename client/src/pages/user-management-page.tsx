@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -59,7 +60,8 @@ const userRoles = [
   { value: "service", label: "Service" },
   { value: "claim_agent", label: "Agent de réclamation" },
   { value: "technician", label: "Technicien" },
-  { value: "client", label: "Client" }
+  { value: "financement", label: "Financement" },
+  { value: "client", label: "Client" },
 ];
 
 // Schema pour l'ajout d'un utilisateur
@@ -95,9 +97,13 @@ type EditUserFormValues = z.infer<typeof editUserFormSchema>;
 type UserFormValues = AddUserFormValues | EditUserFormValues;
 
 export default function UserManagementPage() {
-  const { user } = useAuth();
+  const { user: currentUser } = useAuth();
+  const user = currentUser; // alias kept for existing code compatibility
+  const isAdmin = currentUser?.role === "admin";
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -239,8 +245,9 @@ export default function UserManagementPage() {
     }
   });
 
-  // Filtrer les utilisateurs en fonction du terme de recherche
+  // Filtrer les utilisateurs en fonction du terme de recherche et du rôle
   const filteredUsers = users?.filter((user: any) => {
+    if (roleFilter !== "all" && user.role !== roleFilter) return false;
     const searchLower = searchTerm.toLowerCase();
     return (
       user.username?.toLowerCase().includes(searchLower) ||
@@ -380,18 +387,28 @@ export default function UserManagementPage() {
         </Button>
       </div>
       
-      {/* Barre de recherche */}
-      <div className="mb-6 relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-4 w-4 text-gray-400" />
+      {/* Barre de recherche + filtre par rôle */}
+      <div className="mb-6 flex gap-3">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-gray-400" />
+          </div>
+          <Input
+            type="text"
+            placeholder="Rechercher par nom, email, rôle..."
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-        <Input
-          type="text"
-          placeholder="Rechercher par nom, email, rôle..."
-          className="pl-10"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <select
+          className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm min-w-[180px]"
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+        >
+          <option value="all">Tous les rôles</option>
+          {userRoles.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+        </select>
       </div>
       
       {/* Tableau des utilisateurs */}
@@ -427,12 +444,17 @@ export default function UserManagementPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end space-x-2">
-                        <Button variant="ghost" size="sm" onClick={() => handleEditUser(user)}>
+                        <Button variant="ghost" size="sm" onClick={() => {
+                          if (user.role === "client") navigate(`/clients/${user.id}/edit`);
+                          else navigate(`/staff/${user.id}/edit?role=${user.role}`);
+                        }}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDeleteUser(user)} className="text-red-500 hover:text-red-700">
-                          <Trash className="h-4 w-4" />
-                        </Button>
+                        {isAdmin && (
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteUser(user)} className="text-red-500 hover:text-red-700">
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

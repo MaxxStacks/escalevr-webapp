@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { 
-  LayoutDashboard, 
-  Wrench, 
-  Calendar, 
-  Truck, 
-  Users, 
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import {
+  LayoutDashboard,
+  Wrench,
+  Calendar,
+  Truck,
+  Users,
   User,
-  Settings, 
+  Settings,
   HelpCircle,
   LogOut,
-  MessageSquare
+  MessageSquare,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -44,6 +47,15 @@ export default function Sidebar() {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  const { data: notifications = [] } = useQuery<{ id: number; type: string; title: string; isRead: boolean }[]>({
+    queryKey: ["/api/notifications"],
+    queryFn: () => apiRequest("GET", "/api/notifications").then(r => r.json()),
+    refetchInterval: 30000,
+    enabled: !!user,
+  });
+
+  const unreadMessages = notifications.filter(n => !n.isRead && n.title?.includes("vous a envoyé un message")).length;
 
   const getNavItems = () => {
     const mainItems = [
@@ -110,7 +122,8 @@ export default function Sidebar() {
       'claim_agent': 'Agent de réclamation',
       'technician': 'Technicien',
       'service': 'Service',
-      'client': 'Client'
+      'client': 'Client',
+      'financement': 'Financement',
     };
     return roleMap[role] || role.charAt(0).toUpperCase() + role.slice(1);
   };
@@ -198,7 +211,7 @@ export default function Sidebar() {
             {translations["Help & Support"]}
           </div>
           
-          <div 
+          <div
             className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors cursor-pointer ${
               location.startsWith("/chat")
                 ? "bg-primary text-primary-foreground"
@@ -208,6 +221,11 @@ export default function Sidebar() {
           >
             <MessageSquare className="h-5 w-5 mr-3" />
             Messagerie
+            {unreadMessages > 0 && (
+              <Badge className="ml-auto bg-[#f5901d] text-white text-xs px-1.5 py-0.5 min-w-[20px] text-center">
+                {unreadMessages > 9 ? "9+" : unreadMessages}
+              </Badge>
+            )}
           </div>
 
           <div className="mt-8 mb-2">

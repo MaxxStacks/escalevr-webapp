@@ -10,7 +10,10 @@ import JobNewPage from "@/pages/job-new-page";
 import JobDetailPage from "@/pages/job-detail-page";
 import SchedulePage from "@/pages/schedule-page";
 import UnitsPage from "@/pages/units-page";
+import UnitFormPage from "@/pages/unit-form-page";
+import ClientFormPage from "@/pages/client-form-page";
 import ClientsPage from "@/pages/clients-page";
+import StaffFormPage from "@/pages/staff-form-page";
 import TechniciansPage from "@/pages/technicians-page";
 import ServiceAgentsPage from "@/pages/service-agents-page";
 import ClaimAgentsPage from "@/pages/claim-agents-page";
@@ -32,7 +35,13 @@ function Router() {
       <ProtectedRoute path="/jobs/:id" component={JobDetailPage} />
       <ProtectedRoute path="/schedule" component={SchedulePage} />
       <ProtectedRoute path="/units" component={UnitsPage} />
+      <ProtectedRoute path="/units/new" component={UnitFormPage} />
+      <ProtectedRoute path="/units/:id/edit" component={UnitFormPage} />
       <ProtectedRoute path="/clients" component={ClientsPage} />
+      <ProtectedRoute path="/clients/new" component={ClientFormPage} />
+      <ProtectedRoute path="/clients/:id/edit" component={ClientFormPage} />
+      <ProtectedRoute path="/staff/new" component={StaffFormPage} />
+      <ProtectedRoute path="/staff/:id/edit" component={StaffFormPage} />
       <ProtectedRoute path="/technicians" component={TechniciansPage} />
       <ProtectedRoute path="/service-agents" component={ServiceAgentsPage} />
       <ProtectedRoute path="/claim-agents" component={ClaimAgentsPage} />

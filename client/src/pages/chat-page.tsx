@@ -48,7 +48,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ArrowRightLeft, Bell, BellDot, Loader2, MessageSquare, Plus, Send, UserPlus, X } from "lucide-react";
+import { ArrowRightLeft, Bell, BellDot, Loader2, MessageSquare, Plus, Send, UserPlus, X, Paperclip } from "lucide-react";
+import Layout from "@/components/layout/layout";
 
 // Type definitions for chat data
 interface ChatRoom {
@@ -110,6 +111,7 @@ export default function ChatPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [newMessageDialogOpen, setNewMessageDialogOpen] = useState(false);
   const [addParticipantDialogOpen, setAddParticipantDialogOpen] = useState(false);
@@ -360,8 +362,36 @@ export default function ChatPage() {
   // Get current room
   const currentRoom = chatRooms.find(room => room.id === Number(roomId));
 
+  // Upload a file attachment and send as message
+  const uploadFileMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/chat/upload", {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Échec du téléversement");
+      return res.json() as Promise<{ url: string; name: string }>;
+    },
+    onSuccess: (data) => {
+      sendMessageMutation.mutate({ message: `[Fichier: ${data.name}](${data.url})` });
+    },
+    onError: () => {
+      toast({ title: "Erreur", description: "Impossible de téléverser le fichier.", variant: "destructive" });
+    },
+  });
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) uploadFileMutation.mutate(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
-    <div className="container mx-auto py-6">
+    <Layout>
+    <div className="h-full">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="md:col-span-1">
           <Card>
@@ -573,7 +603,20 @@ export default function ChatPage() {
                                       : "bg-muted"
                                   }`}
                                 >
-                                  {message.message}
+                                  {/^\[Fichier: .+\]\(.+\)$/.test(message.message) ? (() => {
+                                    const match = message.message.match(/^\[Fichier: (.+)\]\((.+)\)$/);
+                                    return match ? (
+                                      <a
+                                        href={match[2]}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1 underline text-sm"
+                                      >
+                                        <Paperclip className="h-3 w-3" />
+                                        {match[1]}
+                                      </a>
+                                    ) : message.message;
+                                  })() : message.message}
                                 </div>
                               </div>
                             </div>
@@ -586,11 +629,32 @@ export default function ChatPage() {
                 </ScrollArea>
               </CardContent>
               <CardFooter className="p-4 pt-0">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
                 <Form {...messageForm}>
-                  <form 
+                  <form
                     onSubmit={messageForm.handleSubmit(onMessageSubmit)}
                     className="flex w-full gap-2"
                   >
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="shrink-0 text-muted-foreground hover:text-primary"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadFileMutation.isPending || !roomId}
+                      title="Joindre un fichier"
+                    >
+                      {uploadFileMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Paperclip className="h-4 w-4" />
+                      )}
+                    </Button>
                     <FormField
                       control={messageForm.control}
                       name="message"
@@ -607,8 +671,8 @@ export default function ChatPage() {
                         </FormItem>
                       )}
                     />
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={sendMessageMutation.isPending}
                       className="bg-[#f5901d] hover:bg-[#465c50]"
                     >
@@ -874,5 +938,6 @@ export default function ChatPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </Layout>
   );
 }

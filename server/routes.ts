@@ -233,8 +233,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
   
+  // Avatar photo upload
+  app.post('/api/users/:id/avatar',
+    isAuthenticated,
+    upload.single('photo'),
+    async (req, res) => {
+      try {
+        const userId = parseInt(req.params.id);
+        if (userId !== req.user!.id && req.user!.role !== 'admin') {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+        if (!req.file) {
+          return res.status(400).json({ message: "Aucun fichier reçu" });
+        }
+        const avatarUrl = `/uploads/${req.file.filename}`;
+        const updatedUser = await storage.updateUser(userId, { avatarUrl });
+        const { password, ...safe } = updatedUser;
+        res.json({ avatarUrl, user: safe });
+      } catch (error) {
+        res.status(500).json({ message: "Échec du téléversement de la photo" });
+      }
+    }
+  );
+
   // Unit routes
-  app.get('/api/units', 
+  app.get('/api/units',
     isAuthenticated, 
     async (req, res) => {
       try {
@@ -437,22 +460,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const job = await storage.createJob(req.body);
         
-        // If job is warranty type, create a notification for claim agents
-        if (job.type === 'warranty') {
+        // Notify claim agents for warranty jobs
+        if (job.type === 'warranty' || job.type === 'extended_warranty') {
           const claimAgents = await storage.getUsersByRole('claim_agent');
-          
-          // Create notification for each claim agent
           for (const agent of claimAgents) {
             await storage.createNotification({
               userId: agent.id,
               type: 'claim',
-              title: 'New Warranty Job',
-              message: `A new warranty job (#${job.jobNumber}) has been created and needs your attention.`,
+              title: 'Nouveau service de garantie',
+              message: `Un nouveau service de garantie (#${job.jobNumber}) a été créé et nécessite votre attention.`,
               relatedId: job.id
             });
           }
         }
-        
+
+        // Notify assigned technician
+        if (job.technicianId) {
+          await storage.createNotification({
+            userId: job.technicianId,
+            type: 'job',
+            title: 'Nouveau service assigné',
+            message: `Un nouveau service (#${job.jobNumber}) vous a été assigné.`,
+            relatedId: job.id
+          });
+        }
+
         res.status(201).json(job);
       } catch (error) {
         res.status(500).json({ message: "Failed to create job" });
@@ -840,9 +872,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           title: job.description,
           jobNumber: job.jobNumber,
           start: job.dateScheduled,
-          end: job.dateScheduled, // Could add a duration field to the job schema
+          end: job.dateScheduled,
           status: job.status,
-          type: job.type
+          type: job.type,
+          timeStart: (job as any).timeStart || null,
+          timeEnd: (job as any).timeEnd || null,
+          unitId: job.unitId,
         }));
         
         res.json(events);
@@ -1181,20 +1216,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
             await storage.createNotification({
               userId: participant.userId,
               type: "system",
-              title: `New message in ${room.name}`,
-              message: `${user.fullName} sent a new message`,
+              title: `${user.fullName} vous a envoyé un message`,
+              message: `Nouveau message dans "${room.name}"`,
               relatedId: roomId
             });
           }
         }
-        
+
         // If this is a client chat, also notify the client if the sender is not the client
         if (room.type === "client" && room.clientId && room.clientId !== userId) {
           await storage.createNotification({
             userId: room.clientId,
             type: "system",
-            title: `New message from ${user.fullName}`,
-            message: `You have received a new message`,
+            title: `${user.fullName} vous a envoyé un message`,
+            message: `Nouveau message dans "${room.name}"`,
             relatedId: roomId
           });
         }
@@ -1202,6 +1237,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(201).json(message);
       } catch (error) {
         res.status(500).json({ message: "Failed to send message" });
+      }
+    }
+  );
+
+  // Upload a file in a chat room
+  app.post(
+    "/api/chat/upload",
+    isAuthenticated,
+    upload.single("file"),
+    async (req, res) => {
+      try {
+        if (!req.file) {
+          return res.status(400).json({ message: "Aucun fichier reçu" });
+        }
+        const fileUrl = `/uploads/${req.file.filename}`;
+        const originalName = req.file.originalname;
+        res.json({ url: fileUrl, name: originalName });
+      } catch (error) {
+        res.status(500).json({ message: "Échec du téléversement" });
       }
     }
   );

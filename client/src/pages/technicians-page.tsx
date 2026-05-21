@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -72,6 +73,7 @@ type TechnicianFormValues = z.infer<typeof technicianSchema>;
 export default function TechniciansPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTechnician, setSelectedTechnician] = useState<any>(null);
   const [isAddTechnicianDialogOpen, setIsAddTechnicianDialogOpen] = useState(false);
@@ -277,9 +279,9 @@ export default function TechniciansPage() {
         
         {/* Only admins and service can add new technicians */}
         {['admin', 'service'].includes(user?.role as string) && (
-          <Button 
+          <Button
             className="mt-4 md:mt-0 bg-[#f5901d] hover:bg-[#e07d0b]"
-            onClick={handleAddTechnician}
+            onClick={() => navigate("/staff/new?role=technician")}
           >
             <Plus className="h-4 w-4 mr-2" />
             Ajouter un technicien
@@ -332,7 +334,7 @@ export default function TechniciansPage() {
                           <span className="sr-only">Voir</span>
                         </Button>
                         {['admin', 'service'].includes(user?.role as string) && (
-                          <Button variant="ghost" size="sm" onClick={() => handleEditTechnician(tech)}>
+                          <Button variant="ghost" size="sm" onClick={() => navigate(`/staff/${tech.id}/edit?role=technician`)}>
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Modifier</span>
                           </Button>
@@ -446,10 +448,7 @@ export default function TechniciansPage() {
               
               <DialogFooter>
                 {['admin', 'service'].includes(user?.role as string) && (
-                  <Button variant="outline" onClick={() => {
-                    setSelectedTechnician(null);
-                    handleEditTechnician(selectedTechnician);
-                  }}>
+                  <Button variant="outline" onClick={() => { setSelectedTechnician(null); navigate(`/staff/${selectedTechnician.id}/edit?role=technician`); }}>
                     <Edit className="h-4 w-4 mr-2" />
                     Modifier ce technicien
                   </Button>

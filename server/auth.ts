@@ -35,10 +35,10 @@ export function setupAuth(app: Express) {
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
-    cookie: { 
+    cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      secure: true,
-      sameSite: "none",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       httpOnly: true,
     }
   };

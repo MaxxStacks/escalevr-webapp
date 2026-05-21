@@ -1,137 +1,176 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Layout from "@/components/layout/layout";
 import StatusBadge from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, ChevronLeft, ChevronRight, Plus, X, Clock, Truck, User, Wrench } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
-// Utility function to get days in month
-const getDaysInMonth = (year: number, month: number) => {
+const monthNames = [
+  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+];
+const weekDays = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+
+const jobTypeColors: Record<string, { bg: string; text: string; label: string }> = {
+  DAF:              { bg: "rgba(59,130,246,0.12)",  text: "rgb(37,99,235)",    label: "DAF" },
+  PDI:              { bg: "rgba(16,185,129,0.12)",  text: "rgb(5,150,105)",    label: "PDI" },
+  warranty:         { bg: "rgba(79,70,229,0.12)",   text: "rgb(79,70,229)",    label: "Garantie" },
+  extended_warranty:{ bg: "rgba(139,92,246,0.12)",  text: "rgb(109,40,217)",   label: "Garantie prolongée" },
+  insurance:        { bg: "rgba(245,158,11,0.12)",  text: "rgb(217,119,6)",    label: "Assurance" },
+  seasonal:         { bg: "rgba(236,72,153,0.12)",  text: "rgb(190,24,93)",    label: "Saisonnier" },
+  regular:          { bg: "rgba(107,114,128,0.12)", text: "rgb(75,85,99)",     label: "Service régulier" },
+};
+
+function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
-};
-
-// Utility function to get first day of month (0 = Sunday)
-const getFirstDayOfMonth = (year: number, month: number) => {
+}
+function getFirstDay(year: number, month: number) {
   return new Date(year, month, 1).getDay();
-};
+}
 
 export default function SchedulePage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  
-  const { data: events, isLoading, error } = useQuery({
-    queryKey: ["/api/schedule"],
+  const [selectedDay, setSelectedDay] = useState<{ day: number; month: number; year: number } | null>(null);
+  const [showForm, setShowForm] = useState(false);
+
+  const [formData, setFormData] = useState({
+    timeStart: "08:00",
+    timeEnd: "10:00",
+    unitId: "",
+    technicianId: "",
+    type: "regular",
+    description: "",
+    partsRequired: "",
   });
-  
-  // Navigate to previous month
+
+  const { data: events = [], isLoading } = useQuery<any[]>({ queryKey: ["/api/schedule"] });
+  const { data: units = [] } = useQuery<any[]>({ queryKey: ["/api/units"] });
+  const { data: technicians = [] } = useQuery<any[]>({
+    queryKey: ["/api/users/role/technician"],
+    enabled: ["admin", "service"].includes(user?.role as string),
+  });
+
+  const createJobMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/jobs", data);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Erreur lors de la création du service");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/schedule"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
+      toast({ title: "Service créé avec succès" });
+      setShowForm(false);
+      setFormData({ timeStart: "08:00", timeEnd: "10:00", unitId: "", technicianId: "", type: "regular", description: "", partsRequired: "" });
+    },
+    onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
+  });
+
   const prevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear(currentYear - 1);
-    } else {
-      setCurrentMonth(currentMonth - 1);
-    }
+    if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
+    else setCurrentMonth(m => m - 1);
   };
-  
-  // Navigate to next month
   const nextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear(currentYear + 1);
-    } else {
-      setCurrentMonth(currentMonth + 1);
-    }
+    if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); }
+    else setCurrentMonth(m => m + 1);
   };
-  
-  // Generate calendar days
-  const generateCalendarDays = () => {
+
+  const generateDays = () => {
     const daysInMonth = getDaysInMonth(currentYear, currentMonth);
-    const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
-    const days = [];
-    
-    // Previous month days
-    const prevMonthDays = firstDay;
-    const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const prevMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-    const daysInPrevMonth = getDaysInMonth(prevMonthYear, prevMonth);
-    
-    for (let i = prevMonthDays - 1; i >= 0; i--) {
-      days.push({
-        day: daysInPrevMonth - i,
-        month: prevMonth,
-        year: prevMonthYear,
-        isCurrentMonth: false,
-        events: []
-      });
+    const firstDay = getFirstDay(currentYear, currentMonth);
+    const days: any[] = [];
+
+    const prevM = currentMonth === 0 ? 11 : currentMonth - 1;
+    const prevY = currentMonth === 0 ? currentYear - 1 : currentYear;
+    const daysInPrev = getDaysInMonth(prevY, prevM);
+    for (let i = firstDay - 1; i >= 0; i--) {
+      days.push({ day: daysInPrev - i, month: prevM, year: prevY, isCurrentMonth: false, events: [] });
     }
-    
-    // Current month days
+
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(currentYear, currentMonth, i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      // Find events for this day
-      const dayEvents = events?.filter((event: any) => {
-        const eventDate = new Date(event.start);
-        return eventDate.toISOString().split('T')[0] === dateStr;
-      }) || [];
-      
+      const dateStr = date.toISOString().split("T")[0];
+      const dayEvents = events.filter((e: any) => {
+        const ed = new Date(e.start);
+        return ed.toISOString().split("T")[0] === dateStr;
+      });
       days.push({
-        day: i,
-        month: currentMonth,
-        year: currentYear,
-        isCurrentMonth: true,
+        day: i, month: currentMonth, year: currentYear, isCurrentMonth: true,
         isToday: date.toDateString() === new Date().toDateString(),
-        events: dayEvents
+        events: dayEvents,
       });
     }
-    
-    // Next month days to fill the calendar
-    const totalDaysSoFar = days.length;
-    const nextDaysNeeded = 42 - totalDaysSoFar; // 6 rows of 7 days
-    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-    const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-    
-    for (let i = 1; i <= nextDaysNeeded; i++) {
-      days.push({
-        day: i,
-        month: nextMonth,
-        year: nextMonthYear,
-        isCurrentMonth: false,
-        events: []
-      });
+
+    const nextM = currentMonth === 11 ? 0 : currentMonth + 1;
+    const nextY = currentMonth === 11 ? currentYear + 1 : currentYear;
+    for (let i = 1; days.length < 42; i++) {
+      days.push({ day: i, month: nextM, year: nextY, isCurrentMonth: false, events: [] });
     }
-    
     return days;
   };
-  
-  const monthNames = [
-    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-  ];
-  
-  const weekDays = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
-  
-  const calendarDays = generateCalendarDays();
-  
-  // Getting upcoming events for the side panel
-  const today = new Date();
-  const upcomingEvents = events?.filter((event: any) => {
-    const eventDate = new Date(event.start);
-    return eventDate >= today;
-  }).sort((a: any, b: any) => {
-    return new Date(a.start).getTime() - new Date(b.start).getTime();
-  }).slice(0, 5) || [];
-  
+
+  const calendarDays = generateDays();
+
+  const handleDayClick = (d: any) => {
+    if (!d.isCurrentMonth) return;
+    setSelectedDay({ day: d.day, month: d.month, year: d.year });
+    setShowForm(false);
+  };
+
+  const selectedDayEvents = selectedDay
+    ? events.filter((e: any) => {
+        const ed = new Date(e.start);
+        return (
+          ed.getFullYear() === selectedDay.year &&
+          ed.getMonth() === selectedDay.month &&
+          ed.getDate() === selectedDay.day
+        );
+      })
+    : [];
+
+  const handleSubmit = (ev: React.FormEvent) => {
+    ev.preventDefault();
+    if (!selectedDay) return;
+
+    const scheduledDate = new Date(selectedDay.year, selectedDay.month, selectedDay.day);
+    const [sh, sm] = formData.timeStart.split(":").map(Number);
+    scheduledDate.setHours(sh, sm, 0, 0);
+
+    const selectedUnit = units.find((u: any) => u.id === Number(formData.unitId));
+    if (!selectedUnit) return toast({ title: "Veuillez sélectionner un véhicule", variant: "destructive" });
+
+    const jobNum = `SRV-${Date.now()}`;
+
+    createJobMutation.mutate({
+      jobNumber: jobNum,
+      unitId: Number(formData.unitId),
+      clientId: selectedUnit.clientId,
+      type: formData.type,
+      status: "scheduled",
+      description: formData.description || `Service ${formData.type}`,
+      dateScheduled: scheduledDate.toISOString(),
+      technicianId: formData.technicianId ? Number(formData.technicianId) : null,
+      partsRequired: formData.partsRequired || null,
+      timeStart: formData.timeStart,
+      timeEnd: formData.timeEnd,
+      clientVisible: true,
+    });
+  };
+
+  const canBook = ["admin", "service"].includes(user?.role as string);
+
   if (isLoading) {
     return (
       <Layout>
@@ -141,40 +180,30 @@ export default function SchedulePage() {
       </Layout>
     );
   }
-  
-  if (error) {
-    return (
-      <Layout>
-        <div className="flex flex-col items-center justify-center h-full">
-          <h1 className="text-xl text-red-500">Échec de chargement des données du calendrier</h1>
-          <p className="text-gray-600">Veuillez rafraîchir la page</p>
-        </div>
-      </Layout>
-    );
-  }
 
   return (
     <Layout>
-      {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Calendrier</h1>
-        <p className="text-sm text-gray-600">
-          Consultez et gérez les rendez-vous de service
+        <p className="text-sm text-gray-500">
+          {user?.role === "technician"
+            ? "Vos services assignés"
+            : "Consultez et gérez les rendez-vous de service"}
         </p>
       </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <div className={`grid gap-6 ${selectedDay ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1"}`}>
         {/* Calendar */}
-        <div className="lg:col-span-9">
+        <div className={selectedDay ? "lg:col-span-7" : ""}>
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle>Calendrier de service</CardTitle>
-                <div className="flex items-center">
+                <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" onClick={prevMonth}>
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="mx-4 font-medium">
+                  <span className="font-medium min-w-[150px] text-center">
                     {monthNames[currentMonth]} {currentYear}
                   </span>
                   <Button variant="outline" size="sm" onClick={nextMonth}>
@@ -184,120 +213,225 @@ export default function SchedulePage() {
               </div>
             </CardHeader>
             <CardContent>
-              {/* Calendar Week Days */}
-              <div className="grid grid-cols-7 gap-1 text-center font-medium text-sm mb-2">
-                {weekDays.map((day) => (
-                  <div key={day} className="py-2 text-gray-500">
-                    {day}
-                  </div>
-                ))}
+              <div className="grid grid-cols-7 text-center text-sm font-medium text-gray-500 mb-1">
+                {weekDays.map(d => <div key={d} className="py-2">{d}</div>)}
               </div>
-              
-              {/* Calendar Days */}
-              <div className="grid grid-cols-7 gap-1">
-                {calendarDays.map((day, index) => (
-                  <div
-                    key={index}
-                    className={`min-h-[80px] p-1 border relative ${
-                      day.isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-400'
-                    } ${day.isToday ? 'border-primary' : 'border-gray-200'}`}
-                  >
-                    <div className={`text-sm p-1 ${
-                      day.isToday ? 'font-bold bg-primary text-white rounded-full h-6 w-6 flex items-center justify-center' : ''
-                    }`}>
-                      {day.day}
-                    </div>
-                    
-                    {/* Events */}
-                    <div className="mt-1 space-y-1">
-                      {day.events.slice(0, 2).map((event: any, i: number) => (
-                        <div
-                          key={i}
-                          className="text-xs p-1 rounded truncate"
-                          style={{
-                            backgroundColor: event.type === 'warranty' ? 'rgba(79, 70, 229, 0.1)' : 
-                                             event.type === 'insurance' ? 'rgba(245, 158, 11, 0.1)' :
-                                             'rgba(16, 185, 129, 0.1)',
-                            color: event.type === 'warranty' ? 'rgb(79, 70, 229)' : 
-                                   event.type === 'insurance' ? 'rgb(245, 158, 11)' :
-                                   'rgb(16, 185, 129)'
-                          }}
-                        >
-                          {event.title}
-                        </div>
-                      ))}
-                      
-                      {day.events.length > 2 && (
-                        <div className="text-xs text-gray-500 p-1">
-                          +{day.events.length - 2} de plus
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Upcoming Events */}
-        <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Rendez-vous à venir</CardTitle>
-              <CardDescription>
-                Les 5 prochains rendez-vous de service
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {upcomingEvents.length > 0 ? (
-                  upcomingEvents.map((event: any) => (
+              <div className="grid grid-cols-7 gap-px bg-gray-200 border border-gray-200 rounded-md overflow-hidden">
+                {calendarDays.map((d, i) => {
+                  const isSelected = selectedDay && d.day === selectedDay.day && d.month === selectedDay.month && d.year === selectedDay.year;
+                  return (
                     <div
-                      key={event.id}
-                      className="border-l-4 pl-3 py-2"
-                      style={{
-                        borderLeftColor: event.type === 'warranty' ? 'rgb(79, 70, 229)' : 
-                                        event.type === 'insurance' ? 'rgb(245, 158, 11)' :
-                                        'rgb(16, 185, 129)'
-                      }}
+                      key={i}
+                      onClick={() => handleDayClick(d)}
+                      className={`min-h-[80px] p-1 bg-white cursor-pointer transition-colors ${
+                        !d.isCurrentMonth ? "bg-gray-50 text-gray-300" : "hover:bg-primary/5"
+                      } ${isSelected ? "ring-2 ring-inset ring-primary" : ""}`}
                     >
-                      <div className="flex justify-between">
-                        <h3 className="font-medium text-sm">{event.jobNumber}</h3>
-                        <StatusBadge status={event.status} />
+                      <div className={`text-sm w-6 h-6 flex items-center justify-center rounded-full mb-1 ${
+                        d.isToday ? "bg-primary text-white font-bold" : ""
+                      }`}>
+                        {d.day}
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{event.title}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(event.start).toLocaleDateString()} • {new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </p>
+                      <div className="space-y-0.5">
+                        {d.events.slice(0, 2).map((e: any, j: number) => {
+                          const colors = jobTypeColors[e.type] || jobTypeColors.regular;
+                          return (
+                            <div key={j} className="text-xs px-1 py-0.5 rounded truncate"
+                              style={{ backgroundColor: colors.bg, color: colors.text }}>
+                              {e.timeStart ? `${e.timeStart} ` : ""}{e.title?.slice(0, 12)}
+                            </div>
+                          );
+                        })}
+                        {d.events.length > 2 && (
+                          <div className="text-xs text-gray-400 px-1">+{d.events.length - 2}</div>
+                        )}
+                      </div>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-sm">Aucun rendez-vous à venir</p>
-                )}
+                  );
+                })}
               </div>
-              
+
               {/* Legend */}
-              <div className="mt-6 border-t pt-4">
-                <h3 className="text-sm font-medium mb-2">Types de service</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-indigo-600 mr-2"></div>
-                    <span className="text-xs text-gray-600">Garantie</span>
+              <div className="mt-4 flex flex-wrap gap-3">
+                {Object.entries(jobTypeColors).map(([key, val]) => (
+                  <div key={key} className="flex items-center gap-1">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: val.text }} />
+                    <span className="text-xs text-gray-500">{val.label}</span>
                   </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-amber-500 mr-2"></div>
-                    <span className="text-xs text-gray-600">Assurance</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-emerald-500 mr-2"></div>
-                    <span className="text-xs text-gray-600">Service régulier</span>
-                  </div>
-                </div>
+                ))}
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Day Panel */}
+        {selectedDay && (
+          <div className="lg:col-span-5 space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">
+                    {selectedDay.day} {monthNames[selectedDay.month]} {selectedDay.year}
+                  </CardTitle>
+                  <Button variant="ghost" size="icon" onClick={() => { setSelectedDay(null); setShowForm(false); }}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {/* Jobs for this day */}
+                {selectedDayEvents.length > 0 ? (
+                  selectedDayEvents.map((e: any) => {
+                    const colors = jobTypeColors[e.type] || jobTypeColors.regular;
+                    return (
+                      <div key={e.id} className="rounded-md p-3 border-l-4"
+                        style={{ borderLeftColor: colors.text, backgroundColor: colors.bg }}>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium text-sm" style={{ color: colors.text }}>
+                              {colors.label} — {e.jobNumber}
+                            </p>
+                            <p className="text-sm text-gray-700 mt-0.5">{e.title}</p>
+                            {e.timeStart && (
+                              <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {e.timeStart}{e.timeEnd ? ` – ${e.timeEnd}` : ""}
+                              </p>
+                            )}
+                          </div>
+                          <StatusBadge status={e.status} />
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-sm text-gray-400 text-center py-4">Aucun service ce jour</p>
+                )}
+
+                {/* Book button */}
+                {canBook && !showForm && (
+                  <Button className="w-full bg-[#f5901d] hover:bg-[#e07d0b]" onClick={() => setShowForm(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Ajouter un service
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Booking Form */}
+            {canBook && showForm && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Nouveau service</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Time range */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
+                        <Clock className="h-4 w-4" /> Plage horaire
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <Input type="time" value={formData.timeStart}
+                          onChange={e => setFormData(f => ({ ...f, timeStart: e.target.value }))} className="flex-1" />
+                        <span className="text-gray-500 text-sm">à</span>
+                        <Input type="time" value={formData.timeEnd}
+                          onChange={e => setFormData(f => ({ ...f, timeEnd: e.target.value }))} className="flex-1" />
+                      </div>
+                    </div>
+
+                    {/* Job type */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
+                        <Wrench className="h-4 w-4" /> Type de service
+                      </label>
+                      <select
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={formData.type}
+                        onChange={e => setFormData(f => ({ ...f, type: e.target.value }))}
+                      >
+                        {Object.entries(jobTypeColors).map(([key, val]) => (
+                          <option key={key} value={key}>{val.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Vehicle */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
+                        <Truck className="h-4 w-4" /> Véhicule
+                      </label>
+                      <select
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={formData.unitId}
+                        onChange={e => setFormData(f => ({ ...f, unitId: e.target.value }))}
+                        required
+                      >
+                        <option value="">Sélectionner un véhicule</option>
+                        {units.map((u: any) => (
+                          <option key={u.id} value={u.id}>
+                            {u.year} {u.make} {u.model} — {u.shortVin || u.vin}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Technician */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
+                        <User className="h-4 w-4" /> Technicien assigné (optionnel)
+                      </label>
+                      <select
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={formData.technicianId}
+                        onChange={e => setFormData(f => ({ ...f, technicianId: e.target.value }))}
+                      >
+                        <option value="">Aucun technicien</option>
+                        {technicians.map((t: any) => (
+                          <option key={t.id} value={t.id}>{t.fullName}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Description</label>
+                      <Textarea
+                        placeholder="Description du service..."
+                        value={formData.description}
+                        onChange={e => setFormData(f => ({ ...f, description: e.target.value }))}
+                        rows={2}
+                      />
+                    </div>
+
+                    {/* Parts */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-1 block">Pièces requises (optionnel)</label>
+                      <Textarea
+                        placeholder="Liste des pièces nécessaires..."
+                        value={formData.partsRequired}
+                        onChange={e => setFormData(f => ({ ...f, partsRequired: e.target.value }))}
+                        rows={2}
+                      />
+                    </div>
+
+                    <div className="flex gap-2 pt-1">
+                      <Button type="button" variant="outline" className="flex-1"
+                        onClick={() => setShowForm(false)}>
+                        Annuler
+                      </Button>
+                      <Button type="submit" className="flex-1 bg-[#f5901d] hover:bg-[#e07d0b]"
+                        disabled={createJobMutation.isPending}>
+                        {createJobMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Créer le service
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
       </div>
     </Layout>
   );

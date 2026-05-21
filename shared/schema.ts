@@ -4,8 +4,8 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Define enums for improved type safety
-export const userRoleEnum = pgEnum("user_role", ["admin", "claim_agent", "technician", "service", "client"]);
-export const jobTypeEnum = pgEnum("job_type", ["DAF", "PDI", "warranty", "insurance", "seasonal", "regular"]);
+export const userRoleEnum = pgEnum("user_role", ["admin", "claim_agent", "technician", "service", "client", "financement"]);
+export const jobTypeEnum = pgEnum("job_type", ["DAF", "PDI", "warranty", "extended_warranty", "insurance", "seasonal", "regular"]);
 export const jobStatusEnum = pgEnum("job_status", ["scheduled", "in_progress", "awaiting_parts", "awaiting_approval", "completed"]);
 export const claimStatusEnum = pgEnum("claim_status", ["pending", "approved", "rejected"]);
 export const notificationTypeEnum = pgEnum("notification_type", ["claim", "job", "schedule", "system"]);
@@ -19,9 +19,21 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   fullName: text("full_name").notNull(),
   email: text("email").notNull(),
-  role: userRoleEnum("role").notNull(), // "admin", "claim_agent", "technician", "service", "client"
+  role: userRoleEnum("role").notNull(),
   phone: text("phone"),
+  workPhone: text("work_phone"),
   avatarUrl: text("avatar_url"),
+  // Address
+  address: text("address"),
+  city: text("city"),
+  province: text("province"),
+  postalCode: text("postal_code"),
+  // Co-owner
+  coOwnerFirstName: text("co_owner_first_name"),
+  coOwnerLastName: text("co_owner_last_name"),
+  coOwnerEmail: text("co_owner_email"),
+  coOwnerPhone: text("co_owner_phone"),
+  coOwnerWorkPhone: text("co_owner_work_phone"),
 });
 
 // User relations will be defined after all tables are declared
@@ -37,8 +49,17 @@ export const units = pgTable("units", {
   model: text("model").notNull(),
   vin: text("vin").notNull().unique(),
   shortVin: text("short_vin"),
+  color: text("color"),
   clientId: integer("client_id").notNull().references(() => users.id),
   dateAdded: timestamp("date_added").notNull().defaultNow(),
+  activationDate: timestamp("activation_date"),
+  internalUnitNumber: text("internal_unit_number"),
+  saleDate: timestamp("sale_date"),
+  baseWarrantyDate: timestamp("base_warranty_date"),
+  warrantyDate: timestamp("warranty_date"),
+  extendedWarranty: boolean("extended_warranty").default(false),
+  extendedWarrantyStart: timestamp("extended_warranty_start"),
+  extendedWarrantyEnd: timestamp("extended_warranty_end"),
   notes: text("notes"),
 });
 
@@ -60,6 +81,9 @@ export const jobs = pgTable("jobs", {
   dateCompleted: timestamp("date_completed"),
   technicianId: integer("technician_id").references(() => users.id),
   notes: text("notes"),
+  partsRequired: text("parts_required"),
+  timeStart: text("time_start"),
+  timeEnd: text("time_end"),
   clientVisible: boolean("client_visible").default(true),
 });
 

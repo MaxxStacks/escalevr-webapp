@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -59,6 +60,7 @@ type ClientFormValues = z.infer<typeof clientSchema>;
 export default function ClientsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [isAddClientDialogOpen, setIsAddClientDialogOpen] = useState(false);
@@ -260,9 +262,9 @@ export default function ClientsPage() {
         
         {/* Only admins and service can add new clients */}
         {['admin', 'service'].includes(user?.role as string) && (
-          <Button 
+          <Button
             className="mt-4 md:mt-0 bg-[#f5901d] hover:bg-[#e07d0b]"
-            onClick={handleAddClient}
+            onClick={() => navigate("/clients/new")}
           >
             <Plus className="h-4 w-4 mr-2" />
             Ajouter un client
@@ -315,7 +317,7 @@ export default function ClientsPage() {
                           <span className="sr-only">Voir</span>
                         </Button>
                         {['admin', 'service'].includes(user?.role as string) && (
-                          <Button variant="ghost" size="sm" onClick={() => handleEditClient(client)}>
+                          <Button variant="ghost" size="sm" onClick={() => navigate(`/clients/${client.id}/edit`)}>
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Modifier</span>
                           </Button>
@@ -398,10 +400,7 @@ export default function ClientsPage() {
               
               <DialogFooter>
                 {['admin', 'service'].includes(user?.role as string) && (
-                  <Button variant="outline" onClick={() => {
-                    setSelectedClient(null);
-                    handleEditClient(selectedClient);
-                  }}>
+                  <Button variant="outline" onClick={() => { setSelectedClient(null); navigate(`/clients/${selectedClient.id}/edit`); }}>
                     <Edit className="h-4 w-4 mr-2" />
                     Modifier ce client
                   </Button>
