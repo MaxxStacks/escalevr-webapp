@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
@@ -29,6 +29,7 @@ function Router() {
   return (
     <Switch>
       <ProtectedRoute path="/" component={HomePage} />
+      <Route path="/auth"><Redirect to="/connexion" /></Route>
       <Route path="/connexion" component={AuthPage} />
       <ProtectedRoute path="/tableau-de-bord" component={DashboardPage} />
       <ProtectedRoute path="/travaux" component={JobsPage} />
