@@ -94,6 +94,7 @@ export default function Sidebar() {
     if (user?.role === "admin") {
       userItems.push(
         { path: "/claim-agents", label: translations["Claims"], icon: <Users className="h-5 w-5" /> },
+        { path: "/finance-agents", label: "Financement", icon: <Users className="h-5 w-5" /> },
         { path: "/users", label: "Tous les utilisateurs", icon: <Users className="h-5 w-5" /> }
       );
     }

@@ -17,6 +17,7 @@ import StaffFormPage from "@/pages/staff-form-page";
 import TechniciansPage from "@/pages/technicians-page";
 import ServiceAgentsPage from "@/pages/service-agents-page";
 import ClaimAgentsPage from "@/pages/claim-agents-page";
+import FinanceAgentsPage from "@/pages/finance-agents-page";
 import UserManagementPage from "@/pages/user-management-page";
 import SettingsPage from "@/pages/settings-page";
 import SupportPage from "@/pages/support-page";
@@ -45,6 +46,7 @@ function Router() {
       <ProtectedRoute path="/technicians" component={TechniciansPage} />
       <ProtectedRoute path="/service-agents" component={ServiceAgentsPage} />
       <ProtectedRoute path="/claim-agents" component={ClaimAgentsPage} />
+      <ProtectedRoute path="/finance-agents" component={FinanceAgentsPage} />
       <ProtectedRoute path="/users" component={UserManagementPage} />
       <ProtectedRoute path="/chat" component={ChatPage} />
       <ProtectedRoute path="/chat/:roomId" component={ChatPage} />

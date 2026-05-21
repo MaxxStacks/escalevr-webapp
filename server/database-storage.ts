@@ -6,6 +6,7 @@ import {
   claims, type Claim, type InsertClaim,
   notifications, type Notification, type InsertNotification,
   photos, type Photo, type InsertPhoto,
+  documents, type DocumentFile, type InsertDocumentFile,
   chatRooms, type ChatRoom, type InsertChatRoom,
   chatMessages, type ChatMessage, type InsertChatMessage,
   chatParticipants, type ChatParticipant, type InsertChatParticipant
@@ -355,5 +356,36 @@ export class DatabaseStorage implements IStorage {
           eq(chatParticipants.userId, userId)
         )
       );
+  }
+
+  // Document methods
+  async getDocument(id: number): Promise<DocumentFile | undefined> {
+    const result = await db.select().from(documents).where(eq(documents.id, id));
+    return result[0];
+  }
+
+  async getDocumentsByEntity(entityType: string, entityId: number): Promise<DocumentFile[]> {
+    return await db.select()
+      .from(documents)
+      .where(and(eq(documents.entityType, entityType as any), eq(documents.entityId, entityId)))
+      .orderBy(desc(documents.dateUploaded));
+  }
+
+  async createDocument(doc: InsertDocumentFile): Promise<DocumentFile> {
+    const result = await db.insert(documents).values(doc).returning();
+    return result[0];
+  }
+
+  async deleteDocument(id: number): Promise<boolean> {
+    const result = await db.delete(documents).where(eq(documents.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async updateDocumentVisibility(id: number, clientVisible: boolean): Promise<DocumentFile | undefined> {
+    const result = await db.update(documents)
+      .set({ clientVisible })
+      .where(eq(documents.id, id))
+      .returning();
+    return result[0];
   }
 }

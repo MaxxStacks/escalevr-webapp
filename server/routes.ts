@@ -7,11 +7,12 @@ import { storage } from "./storage";
 import { setupAuth, hashPassword } from "./auth";
 import { notificationsController } from "./controllers/notifications-controller";
 import { z } from "zod";
-import { 
-  insertJobSchema, 
-  insertUnitSchema, 
-  insertClaimSchema, 
-  insertPhotoSchema, 
+import {
+  insertJobSchema,
+  insertUnitSchema,
+  insertClaimSchema,
+  insertPhotoSchema,
+  insertDocumentSchema,
   insertNotificationSchema,
   insertChatRoomSchema,
   insertChatMessageSchema,
@@ -20,10 +21,14 @@ import {
   User
 } from "@shared/schema";
 
-// Create uploads directory if it doesn't exist
+// Create uploads directories if they don't exist
 const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
+}
+const documentsDir = path.join(uploadsDir, "documents");
+if (!fs.existsSync(documentsDir)) {
+  fs.mkdirSync(documentsDir, { recursive: true });
 }
 
 // Configure multer for file uploads
@@ -38,6 +43,25 @@ const storage_disk = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage_disk });
+
+// Multer config for document uploads (PDF only, 20 MB)
+const documentDisk = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, documentsDir),
+  filename: (_req, file, cb) => {
+    const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, unique + path.extname(file.originalname));
+  },
+});
+const uploadDocument = multer({
+  storage: documentDisk,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = [".pdf", ".doc", ".docx"];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) cb(null, true);
+    else cb(new Error("Seuls les fichiers PDF et Word sont acceptés"));
+  },
+});
 
 // Middleware to check authentication
 function isAuthenticated(req: Request, res: Response, next: NextFunction) {
@@ -797,8 +821,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
   
+  // ─── Document routes ──────────────────────────────────────────────────────
+
+  // Upload a document for a unit or client
+  app.post(
+    "/api/documents",
+    isAuthenticated,
+    hasRole(["admin", "service"]),
+    uploadDocument.single("file"),
+    async (req, res) => {
+      try {
+        if (!req.file) return res.status(400).json({ message: "Aucun fichier reçu" });
+
+        const { entityType, entityId, category, name, clientVisible } = req.body;
+        if (!["unit", "client"].includes(entityType))
+          return res.status(400).json({ message: "entityType invalide" });
+
+        const doc = await storage.createDocument({
+          entityType,
+          entityId: parseInt(entityId),
+          category,
+          name: name || req.file.originalname,
+          url: `/uploads/documents/${req.file.filename}`,
+          uploadedBy: req.user!.id,
+          clientVisible: clientVisible === "true",
+        });
+        res.status(201).json(doc);
+      } catch (err: any) {
+        res.status(500).json({ message: err.message || "Échec du téléversement" });
+      }
+    }
+  );
+
+  // List documents for a unit or client
+  app.get(
+    "/api/documents/:entityType/:entityId",
+    isAuthenticated,
+    async (req, res) => {
+      try {
+        const { entityType, entityId } = req.params;
+        if (!["unit", "client"].includes(entityType))
+          return res.status(400).json({ message: "entityType invalide" });
+
+        const docs = await storage.getDocumentsByEntity(entityType, parseInt(entityId));
+
+        // Clients only see documents marked clientVisible
+        if (req.user!.role === "client") {
+          return res.json(docs.filter(d => d.clientVisible));
+        }
+        res.json(docs);
+      } catch {
+        res.status(500).json({ message: "Échec du chargement des documents" });
+      }
+    }
+  );
+
+  // Delete a document
+  app.delete(
+    "/api/documents/:id",
+    isAuthenticated,
+    hasRole(["admin", "service"]),
+    async (req, res) => {
+      try {
+        const id = parseInt(req.params.id);
+        const doc = await storage.getDocument(id);
+        if (!doc) return res.status(404).json({ message: "Document introuvable" });
+
+        // Remove file from disk
+        const filePath = path.join(process.cwd(), doc.url);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+        await storage.deleteDocument(id);
+        res.json({ success: true });
+      } catch {
+        res.status(500).json({ message: "Échec de la suppression" });
+      }
+    }
+  );
+
+  // Toggle clientVisible on a document
+  app.patch(
+    "/api/documents/:id/visibility",
+    isAuthenticated,
+    hasRole(["admin", "service"]),
+    async (req, res) => {
+      try {
+        const id = parseInt(req.params.id);
+        const { clientVisible } = req.body;
+        if (typeof clientVisible !== "boolean")
+          return res.status(400).json({ message: "clientVisible doit être un booléen" });
+
+        const updated = await storage.updateDocumentVisibility(id, clientVisible);
+        if (!updated) return res.status(404).json({ message: "Document introuvable" });
+        res.json(updated);
+      } catch {
+        res.status(500).json({ message: "Échec de la mise à jour" });
+      }
+    }
+  );
+
+  // ─── Notification routes ───────────────────────────────────────────────────
+
   // Notification routes
-  app.get('/api/notifications', 
+  app.get('/api/notifications',
     isAuthenticated, 
     async (req, res) => {
       try {

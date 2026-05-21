@@ -21,7 +21,7 @@ const ROLE_BACK: Record<string, string> = {
   service: "/service-agents",
   technician: "/technicians",
   claim_agent: "/claim-agents",
-  financement: "/users",
+  financement: "/finance-agents",
   admin: "/users",
 };
 

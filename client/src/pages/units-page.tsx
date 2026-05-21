@@ -22,7 +22,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Loader2, Search, Plus, Eye, Image, Car, Edit, Trash2, AlertTriangle } from "lucide-react";
+import { Loader2, Search, Plus, Eye, Image, Car, Edit, Trash2, AlertTriangle, FileText } from "lucide-react";
+import DocumentUpload from "@/components/documents/document-upload";
+import DocumentList from "@/components/documents/document-list";
 
 
 export default function UnitsPage() {
@@ -32,6 +34,7 @@ export default function UnitsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showUnitDialog, setShowUnitDialog] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState<any>(null);
+  const [unitTab, setUnitTab] = useState<"details" | "documents">("details");
 
   // Fetch units
   const { data: units, isLoading, error } = useQuery({
@@ -67,7 +70,7 @@ export default function UnitsPage() {
     onError: (e: Error) => toast({ title: "Erreur", description: e.message, variant: "destructive" }),
   });
 
-  const handleViewUnit = (unit: any) => { setSelectedUnit(unit); setShowUnitDialog(true); };
+  const handleViewUnit = (unit: any) => { setSelectedUnit(unit); setShowUnitDialog(true); setUnitTab("details"); };
   const handleDeleteUnit = (unit: any) => { setUnitToDelete(unit); setShowDeleteConfirm(true); };
   const confirmDeleteUnit = () => {
     if (unitToDelete) { deleteUnitMutation.mutate(unitToDelete.id); setShowDeleteConfirm(false); setUnitToDelete(null); }
@@ -195,98 +198,115 @@ export default function UnitsPage() {
       
       {/* Unit Details Dialog */}
       <Dialog open={showUnitDialog} onOpenChange={setShowUnitDialog}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Détails du véhicule</DialogTitle>
+            <DialogTitle>
+              {selectedUnit ? `${selectedUnit.year} ${selectedUnit.make} ${selectedUnit.model}` : "Détails du véhicule"}
+            </DialogTitle>
           </DialogHeader>
-          
+
           {selectedUnit && (
-            <div className="space-y-6">
-              <h2 className="text-xl font-bold">
-                {selectedUnit.year} {selectedUnit.make} {selectedUnit.model}
-              </h2>
-              
-              {/* Unit Photos */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Photos</h3>
-                {selectedUnit.photos && selectedUnit.photos.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-2">
-                    {selectedUnit.photos.map((photo: any, index: number) => (
-                      <div key={index} className="aspect-video bg-gray-100 rounded-md overflow-hidden">
-                        <img 
-                          src={photo.url} 
-                          alt={`Photo véhicule ${index + 1}`}
-                          className="h-full w-full object-cover"
-                        />
+            <>
+              {/* Tab bar */}
+              <div className="flex border-b -mx-1">
+                <button
+                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${unitTab === "details" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+                  onClick={() => setUnitTab("details")}
+                >
+                  <Image className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+                  Détails
+                </button>
+                <button
+                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${unitTab === "documents" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+                  onClick={() => setUnitTab("documents")}
+                >
+                  <FileText className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+                  Documents
+                </button>
+              </div>
+
+              <div className="overflow-y-auto flex-1 space-y-4 py-2">
+                {unitTab === "details" && (
+                  <>
+                    {/* Photos */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-500 mb-2">Photos</h3>
+                      {selectedUnit.photos && selectedUnit.photos.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-2">
+                          {selectedUnit.photos.map((photo: any, index: number) => (
+                            <div key={index} className="aspect-video bg-gray-100 rounded-md overflow-hidden">
+                              <img src={photo.url} alt={`Photo ${index + 1}`} className="h-full w-full object-cover" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="border border-dashed border-gray-300 rounded-md p-6 flex flex-col items-center text-gray-400">
+                          <Image className="h-8 w-8 mb-2" />
+                          <p className="text-sm">Aucune photo disponible</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Unit info grid */}
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-gray-500">NIV</p>
+                        <p className="font-mono mt-0.5">{selectedUnit.vin}</p>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="border border-dashed border-gray-300 rounded-md p-8 flex flex-col items-center justify-center text-gray-500">
-                    <Image className="h-8 w-8 mb-2" />
-                    <p>Aucune photo disponible</p>
+                      {selectedUnit.shortVin && (
+                        <div>
+                          <p className="text-gray-500">NIV court</p>
+                          <p className="font-mono mt-0.5">{selectedUnit.shortVin}</p>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-gray-500">Ajouté le</p>
+                        <p className="mt-0.5">{new Date(selectedUnit.dateAdded).toLocaleDateString("fr-CA")}</p>
+                      </div>
+                      {selectedUnit.color && (
+                        <div>
+                          <p className="text-gray-500">Couleur</p>
+                          <p className="mt-0.5">{selectedUnit.color}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedUnit.notes && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-500">Notes</h3>
+                        <p className="mt-1 text-sm text-gray-700">{selectedUnit.notes}</p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {unitTab === "documents" && (
+                  <div className="space-y-4">
+                    <DocumentUpload
+                      entityType="unit"
+                      entityId={selectedUnit.id}
+                      onSuccess={() => {}}
+                    />
+                    <DocumentList entityType="unit" entityId={selectedUnit.id} />
                   </div>
                 )}
               </div>
-              
-              {/* Unit Details */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">NIV</h3>
-                  <p className="mt-1 font-mono">{selectedUnit.vin}</p>
-                </div>
-                {selectedUnit.shortVin && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">NIV court</h3>
-                    <p className="mt-1 font-mono">{selectedUnit.shortVin}</p>
-                  </div>
-                )}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Ajouté le</h3>
-                  <p className="mt-1">{new Date(selectedUnit.dateAdded).toLocaleDateString()}</p>
-                </div>
-              </div>
-              
-              {/* Notes */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">Notes</h3>
-                <p className="mt-1 text-gray-700">
-                  {selectedUnit.notes || "Aucune note disponible pour ce véhicule."}
-                </p>
-              </div>
-              
-              {/* Service History - could be implemented with an additional API call */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">Historique des services</h3>
-                <div className="mt-2 border rounded-md divide-y">
-                  <div className="p-3 text-center text-gray-500">
-                    L'historique des services sera affiché ici
-                  </div>
-                </div>
-              </div>
-              
-              <DialogFooter className="flex justify-between">
+
+              <DialogFooter className="flex justify-between pt-2 border-t">
                 {['admin', 'service'].includes(user?.role as string) && (
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={() => { setShowUnitDialog(false); navigate(`/units/${selectedUnit.id}/edit`); }}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Modifier
+                      <Edit className="h-4 w-4 mr-2" /> Modifier
                     </Button>
-                    
-                    {/* Bouton de suppression - Admin uniquement */}
                     {user?.role === 'admin' && (
-                      <Button 
-                        variant="destructive" 
-                        onClick={() => handleDeleteUnit(selectedUnit)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Supprimer
+                      <Button variant="destructive" onClick={() => handleDeleteUnit(selectedUnit)}>
+                        <Trash2 className="h-4 w-4 mr-2" /> Supprimer
                       </Button>
                     )}
                   </div>
                 )}
               </DialogFooter>
-            </div>
+            </>
           )}
         </DialogContent>
       </Dialog>

@@ -3,13 +3,38 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import Layout from "@/components/layout/layout";
 import StatusBadge from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, ChevronLeft, ChevronRight, Plus, X, Clock, Truck, User, Wrench } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+
+const HOURS = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
+const MINUTES = ["00", "15", "30", "45"];
+
+function TimeSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [h, m] = value.split(":");
+  return (
+    <div className="flex items-center gap-1">
+      <select
+        className="flex h-10 rounded-md border border-input bg-background px-2 py-2 text-sm"
+        value={h}
+        onChange={e => onChange(`${e.target.value}:${m}`)}
+      >
+        {HOURS.map(hour => <option key={hour} value={hour}>{hour}</option>)}
+      </select>
+      <span className="text-gray-400 font-medium">:</span>
+      <select
+        className="flex h-10 rounded-md border border-input bg-background px-2 py-2 text-sm"
+        value={MINUTES.includes(m) ? m : "00"}
+        onChange={e => onChange(`${h}:${e.target.value}`)}
+      >
+        {MINUTES.map(min => <option key={min} value={min}>{min}</option>)}
+      </select>
+    </div>
+  );
+}
 
 const monthNames = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -332,11 +357,9 @@ export default function SchedulePage() {
                         <Clock className="h-4 w-4" /> Plage horaire
                       </label>
                       <div className="flex items-center gap-2">
-                        <Input type="time" value={formData.timeStart}
-                          onChange={e => setFormData(f => ({ ...f, timeStart: e.target.value }))} className="flex-1" />
+                        <TimeSelect value={formData.timeStart} onChange={v => setFormData(f => ({ ...f, timeStart: v }))} />
                         <span className="text-gray-500 text-sm">à</span>
-                        <Input type="time" value={formData.timeEnd}
-                          onChange={e => setFormData(f => ({ ...f, timeEnd: e.target.value }))} className="flex-1" />
+                        <TimeSelect value={formData.timeEnd} onChange={v => setFormData(f => ({ ...f, timeEnd: v }))} />
                       </div>
                     </div>
 

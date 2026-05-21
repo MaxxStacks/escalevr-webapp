@@ -11,6 +11,7 @@ export const claimStatusEnum = pgEnum("claim_status", ["pending", "approved", "r
 export const notificationTypeEnum = pgEnum("notification_type", ["claim", "job", "schedule", "system"]);
 export const entityTypeEnum = pgEnum("entity_type", ["job", "unit", "claim"]);
 export const chatTypeEnum = pgEnum("chat_type", ["internal", "client"]);
+export const documentEntityTypeEnum = pgEnum("document_entity_type", ["unit", "client"]);
 
 // User Schema
 export const users = pgTable("users", {
@@ -134,6 +135,22 @@ export const photos = pgTable("photos", {
 });
 
 export const insertPhotoSchema = createInsertSchema(photos)
+  .omit({ id: true, dateUploaded: true });
+
+// Documents Schema
+export const documents = pgTable("documents", {
+  id: serial("id").primaryKey(),
+  entityType: documentEntityTypeEnum("entity_type").notNull(),
+  entityId: integer("entity_id").notNull(),
+  category: text("category").notNull(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  uploadedBy: integer("uploaded_by").references(() => users.id),
+  dateUploaded: timestamp("date_uploaded").notNull().defaultNow(),
+  clientVisible: boolean("client_visible").default(false),
+});
+
+export const insertDocumentSchema = createInsertSchema(documents)
   .omit({ id: true, dateUploaded: true });
 
 // Chat Rooms Schema
@@ -310,6 +327,9 @@ export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 
 export type Photo = typeof photos.$inferSelect;
 export type InsertPhoto = z.infer<typeof insertPhotoSchema>;
+
+export type DocumentFile = typeof documents.$inferSelect;
+export type InsertDocumentFile = z.infer<typeof insertDocumentSchema>;
 
 // Chat types
 export type ChatRoom = typeof chatRooms.$inferSelect;

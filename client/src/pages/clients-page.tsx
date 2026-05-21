@@ -40,7 +40,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader2, Search, Plus, Eye, Mail, Phone, Edit, Save, Trash2, User, X } from "lucide-react";
+import { Loader2, Search, Plus, Eye, Mail, Phone, Edit, Save, Trash2, User, X, FileText } from "lucide-react";
+import DocumentUpload from "@/components/documents/document-upload";
+import DocumentList from "@/components/documents/document-list";
 
 // Schema for adding/editing a client
 const clientSchema = z.object({
@@ -63,6 +65,7 @@ export default function ClientsPage() {
   const [, navigate] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [clientTab, setClientTab] = useState<"details" | "documents">("details");
   const [isAddClientDialogOpen, setIsAddClientDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingClient, setEditingClient] = useState<any>(null);
@@ -173,6 +176,7 @@ export default function ClientsPage() {
   // Handle view client
   const handleViewClient = (client: any) => {
     setSelectedClient(client);
+    setClientTab("details");
     setEditingClient(null);
     setIsEditMode(false);
   };
@@ -340,73 +344,83 @@ export default function ClientsPage() {
       
       {/* Client Details Dialog */}
       <Dialog open={!!selectedClient} onOpenChange={(open) => !open && setSelectedClient(null)}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Détails du client</DialogTitle>
+            <DialogTitle>{selectedClient?.fullName || "Détails du client"}</DialogTitle>
           </DialogHeader>
-          
+
           {selectedClient && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                  <User className="h-8 w-8 text-gray-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">{selectedClient.fullName}</h2>
-                  <p className="text-gray-500">Inscrit: {new Date(selectedClient.dateJoined || Date.now()).toLocaleDateString()}</p>
-                </div>
+            <>
+              {/* Tab bar */}
+              <div className="flex border-b -mx-1">
+                <button
+                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${clientTab === "details" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+                  onClick={() => setClientTab("details")}
+                >
+                  <User className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+                  Détails
+                </button>
+                <button
+                  className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${clientTab === "documents" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+                  onClick={() => setClientTab("documents")}
+                >
+                  <FileText className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+                  Documents
+                </button>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Email</h3>
-                  <div className="mt-1 flex items-center">
-                    <Mail className="h-4 w-4 text-gray-400 mr-2" />
-                    <p>{selectedClient.email}</p>
+
+              <div className="overflow-y-auto flex-1 space-y-4 py-2">
+                {clientTab === "details" && (
+                  <>
+                    <div className="flex items-center gap-4">
+                      <div className="h-14 w-14 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                        <User className="h-7 w-7 text-gray-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-bold">{selectedClient.fullName}</h2>
+                        <p className="text-sm text-gray-500">{selectedClient.username}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-500 mb-0.5">Email</p>
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-gray-400" />
+                          <span>{selectedClient.email}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 mb-0.5">Téléphone</p>
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-400" />
+                          <span>{selectedClient.phone || "Non fourni"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {clientTab === "documents" && (
+                  <div className="space-y-4">
+                    <DocumentUpload
+                      entityType="client"
+                      entityId={selectedClient.id}
+                      onSuccess={() => {}}
+                    />
+                    <DocumentList entityType="client" entityId={selectedClient.id} />
                   </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Téléphone</h3>
-                  <div className="mt-1 flex items-center">
-                    <Phone className="h-4 w-4 text-gray-400 mr-2" />
-                    <p>{selectedClient.phone || "Non fourni"}</p>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Nom d'utilisateur</h3>
-                  <p className="mt-1">{selectedClient.username}</p>
-                </div>
+                )}
               </div>
-              
-              {/* This would show the client's units */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Véhicules du client</h3>
-                <div className="border rounded-md divide-y">
-                  <div className="p-3 text-center text-gray-500">
-                    Les véhicules seront affichés ici
-                  </div>
-                </div>
-              </div>
-              
-              {/* This would show the client's service history */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">Historique des services</h3>
-                <div className="border rounded-md divide-y">
-                  <div className="p-3 text-center text-gray-500">
-                    L'historique des services sera affiché ici
-                  </div>
-                </div>
-              </div>
-              
-              <DialogFooter>
+
+              <DialogFooter className="pt-2 border-t">
                 {['admin', 'service'].includes(user?.role as string) && (
                   <Button variant="outline" onClick={() => { setSelectedClient(null); navigate(`/clients/${selectedClient.id}/edit`); }}>
-                    <Edit className="h-4 w-4 mr-2" />
-                    Modifier ce client
+                    <Edit className="h-4 w-4 mr-2" /> Modifier ce client
                   </Button>
                 )}
               </DialogFooter>
-            </div>
+            </>
           )}
         </DialogContent>
       </Dialog>

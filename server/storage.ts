@@ -1,10 +1,11 @@
-import { 
+import {
   users, type User, type InsertUser,
   units, type Unit, type InsertUnit,
   jobs, type Job, type InsertJob,
   claims, type Claim, type InsertClaim,
   notifications, type Notification, type InsertNotification,
   photos, type Photo, type InsertPhoto,
+  documents, type DocumentFile, type InsertDocumentFile,
   chatRooms, type ChatRoom, type InsertChatRoom,
   chatMessages, type ChatMessage, type InsertChatMessage,
   chatParticipants, type ChatParticipant, type InsertChatParticipant
@@ -64,7 +65,14 @@ export interface IStorage {
   getPhotosByEntity(entityType: string, entityId: number): Promise<Photo[]>;
   createPhoto(photo: InsertPhoto): Promise<Photo>;
   updatePhotoVisibility(id: number, clientVisible: boolean): Promise<Photo | undefined>;
-  
+
+  // Document methods
+  getDocument(id: number): Promise<DocumentFile | undefined>;
+  getDocumentsByEntity(entityType: string, entityId: number): Promise<DocumentFile[]>;
+  createDocument(doc: InsertDocumentFile): Promise<DocumentFile>;
+  deleteDocument(id: number): Promise<boolean>;
+  updateDocumentVisibility(id: number, clientVisible: boolean): Promise<DocumentFile | undefined>;
+
   // Chat Room methods
   getChatRoom(id: number): Promise<ChatRoom | undefined>;
   getChatRooms(): Promise<ChatRoom[]>;
@@ -100,16 +108,18 @@ export class MemStorage implements IStorage {
   private claims: Map<number, Claim>;
   private notifications: Map<number, Notification>;
   private photos: Map<number, Photo>;
+  private docs: Map<number, DocumentFile>;
   private chatRooms: Map<number, ChatRoom>;
   private chatMessages: Map<number, ChatMessage>;
   private chatParticipants: Map<number, ChatParticipant>;
-  
+
   private userIdCounter: number;
   private unitIdCounter: number;
   private jobIdCounter: number;
   private claimIdCounter: number;
   private notificationIdCounter: number;
   private photoIdCounter: number;
+  private docIdCounter: number;
   private chatRoomIdCounter: number;
   private chatMessageIdCounter: number;
   private chatParticipantIdCounter: number;
@@ -123,16 +133,18 @@ export class MemStorage implements IStorage {
     this.claims = new Map();
     this.notifications = new Map();
     this.photos = new Map();
+    this.docs = new Map();
     this.chatRooms = new Map();
     this.chatMessages = new Map();
     this.chatParticipants = new Map();
-    
+
     this.userIdCounter = 1;
     this.unitIdCounter = 1;
     this.jobIdCounter = 1;
     this.claimIdCounter = 1;
     this.notificationIdCounter = 1;
     this.photoIdCounter = 1;
+    this.docIdCounter = 1;
     this.chatRoomIdCounter = 1;
     this.chatMessageIdCounter = 1;
     this.chatParticipantIdCounter = 1;
@@ -580,6 +592,36 @@ export class MemStorage implements IStorage {
 
     this.chatParticipants.set(id, newParticipant);
     return newParticipant;
+  }
+
+  // Document methods
+  async getDocument(id: number): Promise<DocumentFile | undefined> {
+    return this.docs.get(id);
+  }
+
+  async getDocumentsByEntity(entityType: string, entityId: number): Promise<DocumentFile[]> {
+    return Array.from(this.docs.values())
+      .filter(d => d.entityType === entityType && d.entityId === entityId)
+      .sort((a, b) => b.dateUploaded.getTime() - a.dateUploaded.getTime());
+  }
+
+  async createDocument(doc: InsertDocumentFile): Promise<DocumentFile> {
+    const id = this.docIdCounter++;
+    const newDoc: DocumentFile = { ...doc, id, dateUploaded: new Date(), clientVisible: doc.clientVisible ?? false, uploadedBy: doc.uploadedBy ?? null };
+    this.docs.set(id, newDoc);
+    return newDoc;
+  }
+
+  async deleteDocument(id: number): Promise<boolean> {
+    return this.docs.delete(id);
+  }
+
+  async updateDocumentVisibility(id: number, clientVisible: boolean): Promise<DocumentFile | undefined> {
+    const doc = this.docs.get(id);
+    if (!doc) return undefined;
+    const updated = { ...doc, clientVisible };
+    this.docs.set(id, updated);
+    return updated;
   }
 
   async removeChatParticipant(roomId: number, userId: number): Promise<void> {
